@@ -28,11 +28,11 @@ Abrí http://localhost:3000
 
 Por defecto el progreso vive en `localStorage` (solo ese navegador). Para verlo desde cualquier lado:
 
-1. **Base de datos gratis**: entrá a https://console.upstash.com → Create Database (Redis, región cercana, plan Free). En la pestaña REST API copiá `UPSTASH_REDIS_REST_URL` y `UPSTASH_REDIS_REST_TOKEN`.
-2. **Deploy gratis en Vercel**: subí la carpeta a un repo de GitHub, entrá a https://vercel.com/new, importá el repo y en *Environment Variables* pegá las dos variables. Deploy. Te da una URL tipo `https://ios-trainer-xxx.vercel.app`.
+1. **Base de datos gratis (MongoDB Atlas)**: creá una cuenta en https://www.mongodb.com/atlas, un clúster gratuito (M0) y un usuario de base de datos. En *Network Access* permití `0.0.0.0/0` (Vercel no tiene IP fija). En *Connect → Drivers* copiá la cadena `mongodb+srv://...` (reemplazá `<password>`).
+2. **Deploy gratis en Vercel**: subí la carpeta a un repo de GitHub, entrá a https://vercel.com/new, importá el repo y en *Environment Variables* pegá `MONGODB_URI` (y opcionalmente `DB_NAME`, por defecto `ios_trainer`). Deploy. Te da una URL tipo `https://ios-trainer-xxx.vercel.app`.
 3. En la app, en **Inicio → Sincronización**, elegí un código (ej. `wilver-ios-2026`) y tocá Conectar. Usá el mismo código en cada dispositivo. El progreso se guarda en cada cambio y se fusiona (nunca pierde lo hecho).
 
-Para correrlo local con sync, copiá `.env.example` a `.env.local` y completá las variables.
+Para correrlo local con sync, copiá `.env.example` a `.env.local` y completá `MONGODB_URI` (Atlas o un Mongo local, `mongodb://127.0.0.1:27017`). El progreso queda en la colección `progress`, un documento por código de sincronización.
 
 Sin base configurada, la app funciona igual en modo local, y podés mover el progreso con **Exportar / Importar** (.json).
 

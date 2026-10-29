@@ -13,7 +13,7 @@ Entrenador interactivo (Next.js 15, App Router, TypeScript, sin librerías de UI
 - `app/` páginas (una por modo): `lecciones`, `teoria` (referencia rápida), `flashcards`, `quiz`, `salida` (predice la salida), `codigo`, `bugs`, `entrevista`. `app/api/progress` = sync remoto.
 - `components/` UI compartida: `LessonPlayer` (motor de lecciones), `McqGame` (opción múltiple reutilizable), `SyncPanel`, `Inline` (renderiza `código` en backticks), `Code`.
 - `data/` contenido. Tipos en `data/types.ts`. Lecciones en `data/lessons/*.ts` (tipos de paso en `data/lessons/types.ts`).
-- `lib/progress.ts` hook `useProgress`: localStorage + sync opcional con Upstash Redis vía código de sincronización. Fusión por unión (nunca pierde progreso).
+- `lib/progress.ts` hook `useProgress`: localStorage + sync opcional con MongoDB (`lib/mongo.ts`, colección `progress`) vía código de sincronización. Fusión por unión (nunca pierde progreso).
 
 ## Reglas de contenido
 
@@ -33,4 +33,4 @@ Entrenador interactivo (Next.js 15, App Router, TypeScript, sin librerías de UI
 
 ## Persistencia
 
-Sin `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN` la app funciona solo con localStorage; `/api/progress` responde 501 y la UI lo indica. Ver README para deploy en Vercel.
+Sin `MONGODB_URI` (opcional `DB_NAME`, por defecto `ios_trainer`) la app funciona solo con localStorage; `/api/progress` responde 501 y la UI lo indica. Ver README para deploy en Vercel.
