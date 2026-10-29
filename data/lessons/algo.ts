@@ -1,0 +1,341 @@
+import { Lesson } from "./types";
+
+export const algoLessons: Lesson[] = [
+  {
+    id: "l-bigo",
+    topic: "algoritmos",
+    title: "Big-O en 10 minutos",
+    goal: "Reconocer la complejidad de un código a simple vista y saber qué estructura cambia O(n²) por O(n).",
+    minutes: 10,
+    steps: [
+      {
+        kind: "explain",
+        title: "Qué mide",
+        body: [
+          "Big-O describe cómo crece el tiempo (o memoria) cuando crece la entrada n. No mide segundos: mide forma de crecimiento.",
+          "De mejor a peor: O(1) constante, O(log n) logarítmica, O(n) lineal, O(n log n), O(n²) cuadrática.",
+          "Un loop simple sobre n → O(n). Dos loops anidados sobre n → O(n²). Partir a la mitad cada vez → O(log n). Ordenar → O(n log n).",
+        ],
+        code: "// O(n)\nfor x in a { ... }\n\n// O(n²)\nfor x in a { for y in a { ... } }\n\n// O(log n): búsqueda binaria\nwhile lo <= hi { mid = (lo + hi) / 2 ... }\n\n// O(n log n)\na.sorted()",
+      },
+      {
+        kind: "explain",
+        title: "Costo de cada operación en Swift",
+        body: [
+          "Array: `a[i]` O(1), `append` O(1) amortizado, `insert(at: 0)` O(n), `contains` O(n), `firstIndex` O(n), `remove(at:)` O(n).",
+          "Dictionary y Set: `d[k]`, `insert`, `contains`, `remove` O(1) promedio.",
+          "String: `count` O(n) (no es gratis), por eso en loops guardalo en una variable o usá `Array(s)`.",
+        ],
+      },
+      {
+        kind: "predict",
+        prompt: "¿Cuál es la complejidad?",
+        code: "func f(_ a: [Int]) -> Bool {\n    for i in 0..<a.count {\n        for j in (i+1)..<a.count where a[i] == a[j] {\n            return true\n        }\n    }\n    return false\n}",
+        options: ["O(n)", "O(n log n)", "O(n²)", "O(1)"],
+        answer: 2,
+        explanation: "Dos loops anidados sobre n. Con un Set sería O(n).",
+      },
+      {
+        kind: "explain",
+        title: "La regla de oro del reto",
+        body: [
+          "Si estás escribiendo un for dentro de otro for para 'buscar si ya existe', pará: eso es un `Set` o un `Dictionary`.",
+          "Si necesitás 'el mayor/menor k', ordená una vez (n log n) y tomá `prefix(k)`; no busques el máximo k veces.",
+          "Para el test, O(n) u O(n log n) siempre alcanza. O(n²) suele fallar el test case grande por tiempo.",
+        ],
+      },
+      {
+        kind: "predict",
+        prompt: "¿Complejidad de esta versión?",
+        code: "func f(_ a: [Int]) -> Bool {\n    var s = Set<Int>()\n    for x in a {\n        if !s.insert(x).inserted { return true }\n    }\n    return false\n}",
+        options: ["O(n)", "O(n²)", "O(log n)", "O(n log n)"],
+        answer: 0,
+        explanation: "Un solo loop; insert es O(1) promedio.",
+      },
+    ],
+  },
+  {
+    id: "l-hashmap",
+    topic: "algoritmos",
+    title: "Patrón hash map: contar, agrupar, two-sum",
+    goal: "Resolver en O(n) los retos de frecuencias, duplicados, anagramas y pares que suman X.",
+    minutes: 14,
+    steps: [
+      {
+        kind: "explain",
+        title: "Cuándo aplica",
+        body: [
+          "Cuando la pregunta tiene las palabras 'cuántas veces', 'repetido', 'único', 'agrupar', 'par que sume', 'anagrama'. Todas se resuelven guardando lo que viste en un `Dictionary` o `Set` y consultándolo en O(1).",
+        ],
+      },
+      {
+        kind: "explain",
+        title: "Frecuencias y el más común",
+        body: ["Contar con `default: 0`, luego `max(by:)` sobre el valor."],
+        code: "func masComun(_ s: String) -> Character? {\n    var c: [Character: Int] = [:]\n    for ch in s { c[ch, default: 0] += 1 }\n    return c.max(by: { $0.value < $1.value })?.key\n}\nprint(masComun(\"banana\")!)   // a",
+        output: "a",
+      },
+      {
+        kind: "explain",
+        title: "Two-sum: ¿hay dos que sumen target?",
+        body: [
+          "Para cada x, el complemento es `target - x`. Si ya lo viste, listo. Si no, guardá x. Una sola pasada.",
+        ],
+        code: "func twoSum(_ a: [Int], _ target: Int) -> (Int, Int)? {\n    var idx: [Int: Int] = [:]      // valor → índice\n    for (i, x) in a.enumerated() {\n        if let j = idx[target - x] { return (j, i) }\n        idx[x] = i\n    }\n    return nil\n}\nprint(twoSum([2, 7, 11, 15], 9)!)   // (0, 1)",
+        output: "(0, 1)",
+      },
+      {
+        kind: "fill",
+        prompt: "Completá la clave que buscamos en el diccionario (el complemento).",
+        code: "for (i, x) in a.enumerated() {\n    if let j = idx[____] { return (j, i) }\n    idx[x] = i\n}",
+        accept: ["^target\\s*-\\s*x$"],
+        explanation: "Si x + y = target, entonces y = target - x.",
+        placeholder: "expresión",
+      },
+      {
+        kind: "explain",
+        title: "Anagramas",
+        body: [
+          "Dos strings son anagramas si tienen las mismas letras con la misma frecuencia. Dos formas: ordenar ambos (n log n) o comparar diccionarios de conteo (n).",
+          "Para agrupar anagramas: la clave es el string ordenado.",
+        ],
+        code: "func sonAnagramas(_ a: String, _ b: String) -> Bool {\n    a.lowercased().sorted() == b.lowercased().sorted()\n}\nlet grupos = Dictionary(grouping: [\"eat\", \"tea\", \"tan\", \"nat\"], by: { String($0.sorted()) })\nprint(grupos.values.map { $0.count }.sorted())   // [2, 2]",
+        output: "[2, 2]",
+      },
+      {
+        kind: "predict",
+        code: "let a = [1, 5, 3, 5, 1, 5]\nvar c: [Int: Int] = [:]\nfor x in a { c[x, default: 0] += 1 }\nlet unicos = c.filter { $0.value == 1 }.map { $0.key }\nprint(unicos, c[5]!)",
+        options: ["[3] 3", "[1, 3] 3", "[3] 2", "[] 3"],
+        answer: 0,
+        explanation: "1 aparece 2 veces, 5 tres veces, 3 una vez. Solo 3 es único.",
+      },
+      {
+        kind: "write",
+        prompt: "Escribí `func primerUnico(_ s: String) -> Character?` que devuelva el primer carácter que aparece exactamente una vez.",
+        starter: "func primerUnico(_ s: String) -> Character? {\n    \n}",
+        checks: [
+          { pattern: "\\[Character:\\s*Int\\]", label: "Diccionario de frecuencias" },
+          { pattern: "default:\\s*0", label: "Cuenta con default: 0" },
+          { pattern: "for\\s+\\w+\\s+in\\s+s[\\s\\S]*for\\s+\\w+\\s+in\\s+s|first\\(where:", label: "Segunda pasada en orden original para encontrar el de conteo 1" },
+        ],
+        solution: "func primerUnico(_ s: String) -> Character? {\n    var c: [Character: Int] = [:]\n    for ch in s { c[ch, default: 0] += 1 }\n    return s.first(where: { c[$0] == 1 })\n}",
+        hint: "Primera pasada: contar. Segunda pasada (en orden): el primero con conteo 1.",
+      },
+    ],
+  },
+  {
+    id: "l-twopointers",
+    topic: "algoritmos",
+    title: "Patrón dos punteros",
+    goal: "Palíndromos, pares en array ordenado y compactar in-place sin memoria extra.",
+    minutes: 10,
+    steps: [
+      {
+        kind: "explain",
+        title: "La idea",
+        body: [
+          "Dos índices que se mueven según una regla: desde los extremos hacia el centro (palíndromo, par que suma X en array ordenado) o uno lento y uno rápido (quitar duplicados in-place).",
+          "Ventaja: O(n) tiempo, O(1) memoria.",
+        ],
+        code: "func esPalindromo(_ s: String) -> Bool {\n    let c = Array(s.lowercased().filter { $0.isLetter })\n    var i = 0, j = c.count - 1\n    while i < j {\n        if c[i] != c[j] { return false }\n        i += 1; j -= 1\n    }\n    return true\n}\nprint(esPalindromo(\"Anita lava la tina\"))   // true",
+        output: "true",
+      },
+      {
+        kind: "explain",
+        title: "Par que suma X en array ordenado",
+        body: [
+          "Si la suma es menor que el target, movés el izquierdo (sube la suma). Si es mayor, movés el derecho (baja). Si es igual, encontraste.",
+        ],
+        code: "func parSuma(_ a: [Int], _ t: Int) -> (Int, Int)? {\n    var i = 0, j = a.count - 1\n    while i < j {\n        let s = a[i] + a[j]\n        if s == t { return (a[i], a[j]) }\n        if s < t { i += 1 } else { j -= 1 }\n    }\n    return nil\n}\nprint(parSuma([1, 3, 4, 6, 9], 10)!)   // (1, 9)",
+        output: "(1, 9)",
+      },
+      {
+        kind: "fill",
+        prompt: "Completá qué puntero mover cuando la suma es menor que el target.",
+        code: "if s < t { ____ } else { j -= 1 }",
+        accept: ["^i\\s*\\+=\\s*1$", "^i\\s*=\\s*i\\s*\\+\\s*1$"],
+        explanation: "Subir el índice izquierdo aumenta la suma (el array está ordenado).",
+        placeholder: "sentencia",
+      },
+      {
+        kind: "explain",
+        title: "Lento y rápido: quitar duplicados in-place",
+        body: [
+          "En un array ordenado, `w` marca dónde escribir el próximo único; `r` recorre. Si `a[r]` es distinto del último escrito, lo copiás.",
+        ],
+        code: "func quitarDup(_ a: inout [Int]) -> Int {\n    guard !a.isEmpty else { return 0 }\n    var w = 1\n    for r in 1..<a.count where a[r] != a[w - 1] {\n        a[w] = a[r]; w += 1\n    }\n    return w   // largo útil\n}\nvar v = [1, 1, 2, 2, 3]\nlet n = quitarDup(&v)\nprint(Array(v.prefix(n)))   // [1, 2, 3]",
+        output: "[1, 2, 3]",
+      },
+      {
+        kind: "predict",
+        code: "let a = [2, 4, 7, 11]\nvar i = 0, j = a.count - 1, pasos = 0\nwhile i < j {\n    let s = a[i] + a[j]\n    pasos += 1\n    if s == 11 { break }\n    if s < 11 { i += 1 } else { j -= 1 }\n}\nprint(pasos, a[i], a[j])",
+        options: ["2 4 7", "3 4 7", "1 2 11", "2 2 7"],
+        answer: 1,
+        explanation: "Paso 1: 2+11 = 13 > 11 → j baja a 7. Paso 2: 2+7 = 9 < 11 → i sube a 4. Paso 3: 4+7 = 11 → break. Tres pasos, i apunta a 4 y j a 7.",
+      },
+    ],
+  },
+  {
+    id: "l-window",
+    topic: "algoritmos",
+    title: "Patrón sliding window",
+    goal: "Resolver 'suma/promedio/máximo de cada ventana de tamaño k' y 'substring más largo sin repetir' en O(n).",
+    minutes: 12,
+    steps: [
+      {
+        kind: "explain",
+        title: "Ventana fija",
+        body: [
+          "En vez de recalcular la suma de cada ventana (O(n·k)), mantené una suma y al deslizar sumá el que entra y restá el que sale (O(n)).",
+          "Inicializá con la primera ventana `prefix(k)`, luego recorré desde `k` hasta `count - 1`.",
+        ],
+        code: "func maxSumaVentana(_ a: [Int], _ k: Int) -> Int {\n    guard k > 0, k <= a.count else { return 0 }\n    var sum = a.prefix(k).reduce(0, +)\n    var best = sum\n    for i in k..<a.count {\n        sum += a[i] - a[i - k]\n        best = max(best, sum)\n    }\n    return best\n}\nprint(maxSumaVentana([1, 4, 2, 10, 2, 3], 3))   // 16",
+        output: "16",
+      },
+      {
+        kind: "fill",
+        prompt: "Completá la actualización de la suma al deslizar la ventana.",
+        code: "for i in k..<a.count {\n    sum += ____\n    best = max(best, sum)\n}",
+        accept: ["^a\\[i\\]\\s*-\\s*a\\[i\\s*-\\s*k\\]$"],
+        explanation: "Entra a[i], sale a[i - k].",
+        placeholder: "expresión",
+      },
+      {
+        kind: "predict",
+        code: "let a = [2.0, 4.0, 6.0, 8.0]\nlet k = 2\nvar sum = a.prefix(k).reduce(0, +)\nvar r = [sum / Double(k)]\nfor i in k..<a.count {\n    sum += a[i] - a[i - k]\n    r.append(sum / Double(k))\n}\nprint(r)",
+        options: ["[3.0, 5.0, 7.0]", "[3.0, 5.0]", "[2.0, 4.0, 6.0]", "Crash"],
+        answer: 0,
+        explanation: "Ventanas (2,4), (4,6), (6,8) → promedios 3, 5, 7.",
+      },
+      {
+        kind: "explain",
+        title: "Ventana variable: substring sin repetir",
+        body: [
+          "Dos índices `l` y `r` y un Set con lo que hay dentro. Avanzás `r`; si el carácter ya está, movés `l` sacando caracteres hasta que deje de estar. El máximo de `r - l + 1` es la respuesta.",
+        ],
+        code: "func masLargoSinRepetir(_ s: String) -> Int {\n    let c = Array(s)\n    var set = Set<Character>()\n    var l = 0, best = 0\n    for r in 0..<c.count {\n        while set.contains(c[r]) {\n            set.remove(c[l]); l += 1\n        }\n        set.insert(c[r])\n        best = max(best, r - l + 1)\n    }\n    return best\n}\nprint(masLargoSinRepetir(\"abcabcbb\"))   // 3",
+        output: "3",
+      },
+      {
+        kind: "write",
+        prompt: "Escribí `func promedios(_ a: [Double], _ k: Int) -> [Double]` que devuelva el promedio de cada ventana de tamaño k (vacío si k inválido), en O(n).",
+        starter: "func promedios(_ a: [Double], _ k: Int) -> [Double] {\n    \n}",
+        checks: [
+          { pattern: "guard|if\\s+k", label: "Valida k" },
+          { pattern: "prefix\\(k\\)", label: "Primera ventana con prefix(k)" },
+          { pattern: "a\\[i\\]\\s*-\\s*a\\[i\\s*-\\s*k\\]", label: "Desliza sumando el que entra y restando el que sale" },
+          { pattern: "Double\\(k\\)", label: "Divide por Double(k)" },
+        ],
+        warnings: [{ pattern: "for[\\s\\S]*reduce", label: "reduce dentro del for recalcula cada ventana: O(n·k)" }],
+        solution: "func promedios(_ a: [Double], _ k: Int) -> [Double] {\n    guard k > 0, k <= a.count else { return [] }\n    var sum = a.prefix(k).reduce(0, +)\n    var r = [sum / Double(k)]\n    for i in k..<a.count {\n        sum += a[i] - a[i - k]\n        r.append(sum / Double(k))\n    }\n    return r\n}",
+      },
+    ],
+  },
+  {
+    id: "l-stack",
+    topic: "algoritmos",
+    title: "Patrón stack",
+    goal: "Paréntesis balanceados, 'siguiente mayor' y evaluación de expresiones con un array como pila.",
+    minutes: 10,
+    steps: [
+      {
+        kind: "explain",
+        title: "Un array es una pila",
+        body: [
+          "`append` = push, `popLast()` = pop (optional, seguro), `last` = peek. LIFO: el último que entra es el primero que sale.",
+          "Sirve cuando lo que hacés con un elemento depende del **último que viste** y aún no resolviste.",
+        ],
+        code: "var pila: [Int] = []\npila.append(1); pila.append(2)\nprint(pila.last!)        // 2\nprint(pila.popLast()!)   // 2\nprint(pila.popLast()!)   // 1\nprint(pila.popLast() as Any)   // nil, no crashea",
+        output: "2\n2\n1\nnil",
+      },
+      {
+        kind: "explain",
+        title: "Paréntesis balanceados",
+        body: [
+          "Apertura → push. Cierre → pop y comparar con su pareja; si no coincide o la pila estaba vacía, falso. Al final la pila debe estar vacía.",
+        ],
+        code: "func balanceado(_ s: String) -> Bool {\n    let par: [Character: Character] = [\")\": \"(\", \"]\": \"[\", \"}\": \"{\"]\n    var st: [Character] = []\n    for c in s {\n        if \"([{\".contains(c) { st.append(c) }\n        else if let abre = par[c] {\n            if st.popLast() != abre { return false }\n        }\n    }\n    return st.isEmpty\n}\nprint(balanceado(\"{[()]}\"), balanceado(\"(]\"), balanceado(\"((\"))",
+        output: "true false false",
+      },
+      {
+        kind: "fill",
+        prompt: "Completá la condición final: la cadena es válida si…",
+        code: "    }\n    return st.____\n}",
+        accept: ["^isEmpty$"],
+        explanation: "Si quedaron aperturas sin cerrar, la pila no está vacía.",
+        placeholder: "propiedad",
+      },
+      {
+        kind: "predict",
+        code: "var st: [Character] = []\nfor c in \"(()\" {\n    if c == \"(\" { st.append(c) } else { _ = st.popLast() }\n}\nprint(st.count)",
+        options: ["0", "1", "2", "Crash"],
+        answer: 1,
+        explanation: "Push, push, pop → queda 1 apertura sin cerrar.",
+      },
+      {
+        kind: "explain",
+        title: "Siguiente elemento mayor",
+        body: [
+          "Para cada número, el primero a su derecha que es mayor. Recorrés guardando índices en la pila; cuando aparece uno mayor que el tope, resolvés todos los que corresponda.",
+        ],
+        code: "func siguienteMayor(_ a: [Int]) -> [Int] {\n    var res = Array(repeating: -1, count: a.count)\n    var st: [Int] = []   // índices\n    for i in 0..<a.count {\n        while let top = st.last, a[i] > a[top] {\n            res[top] = a[i]; st.removeLast()\n        }\n        st.append(i)\n    }\n    return res\n}\nprint(siguienteMayor([2, 1, 5, 3]))   // [5, 5, -1, -1]",
+        output: "[5, 5, -1, -1]",
+      },
+    ],
+  },
+  {
+    id: "l-binsearch",
+    topic: "algoritmos",
+    title: "Búsqueda binaria y ordenar + recorrer",
+    goal: "Escribir búsqueda binaria sin loop infinito y resolver intervalos/top-k ordenando primero.",
+    minutes: 10,
+    steps: [
+      {
+        kind: "explain",
+        title: "Búsqueda binaria",
+        body: [
+          "Solo en arrays **ordenados**. Mirás el medio; si el target es mayor, descartás la mitad izquierda (`lo = mid + 1`); si es menor, la derecha (`hi = mid - 1`). O(log n).",
+          "Los dos bugs clásicos: `lo = mid` (loop infinito) y `while lo < hi` (se pierde el último elemento).",
+        ],
+        code: "func busqueda(_ a: [Int], _ t: Int) -> Int {\n    var lo = 0, hi = a.count - 1\n    while lo <= hi {\n        let mid = lo + (hi - lo) / 2\n        if a[mid] == t { return mid }\n        if a[mid] < t { lo = mid + 1 } else { hi = mid - 1 }\n    }\n    return -1\n}\nprint(busqueda([1, 3, 5, 7, 9], 7), busqueda([1, 3], 4))   // 3 -1",
+        output: "3 -1",
+      },
+      {
+        kind: "fill",
+        prompt: "Completá la asignación cuando el target está a la derecha del medio.",
+        code: "if a[mid] < t { lo = ____ } else { hi = mid - 1 }",
+        accept: ["^mid\\s*\\+\\s*1$"],
+        explanation: "`mid + 1`: ya sabemos que a[mid] no es el target.",
+        placeholder: "expresión",
+      },
+      {
+        kind: "explain",
+        title: "Ordenar primero, recorrer después",
+        body: [
+          "Muchos retos se vuelven triviales tras ordenar: fusionar intervalos, encontrar el par más cercano, top-k, mediana.",
+          "Fusionar intervalos: ordená por inicio; si el actual empieza antes o igual que el fin del último fusionado, extendé el fin con `max`; si no, abrí uno nuevo.",
+        ],
+        code: "func fusionar(_ iv: [[Int]]) -> [[Int]] {\n    var res: [[Int]] = []\n    for x in iv.sorted(by: { $0[0] < $1[0] }) {\n        if let last = res.last, x[0] <= last[1] {\n            res[res.count - 1][1] = max(last[1], x[1])\n        } else {\n            res.append(x)\n        }\n    }\n    return res\n}\nprint(fusionar([[1,3],[8,10],[2,6]]))   // [[1, 6], [8, 10]]",
+        output: "[[1, 6], [8, 10]]",
+      },
+      {
+        kind: "predict",
+        code: "print(fusionar([[1, 4], [4, 5], [7, 8]]))",
+        options: ["[[1, 5], [7, 8]]", "[[1, 4], [4, 5], [7, 8]]", "[[1, 8]]", "[[1, 5]]"],
+        answer: 0,
+        explanation: "4 <= 4 → se fusionan [1,4] y [4,5]. 7 > 5 → nuevo intervalo.",
+      },
+      {
+        kind: "explain",
+        title: "Checklist antes de enviar un reto",
+        body: [
+          "1. ¿Compila mentalmente? Tipos, optionals, `Array(...)` sobre slices.",
+          "2. Entrada vacía y de un elemento.",
+          "3. Límites del loop: `..<` vs `...`, `count - 1`.",
+          "4. Duplicados, negativos, k > n, mayúsculas/puntuación en strings.",
+          "5. ¿Hay un for dentro de un for? ¿Se puede cambiar por Set/Dictionary?",
+        ],
+      },
+    ],
+  },
+];
