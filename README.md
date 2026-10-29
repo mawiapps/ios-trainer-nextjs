@@ -41,3 +41,8 @@ Sin base configurada, la app funciona igual en modo local, y podés mover el pro
 Las lecciones viven en `data/lessons/*.ts` (tipos de paso: `explain`, `predict`, `fill`, `write`). El resto del contenido vive en `data/*.ts` (flashcards, quiz, output, code, bugs, interview, theory). Agregá un objeto al array y listo; los tipos están en `data/types.ts`.
 
 - En `code.ts`, `checks` son regex que una buena solución debería contener (dan puntaje) y `warnings` regex de errores típicos (restan). No ejecuta Swift: es un chequeo de patrones + solución de referencia para comparar.
+
+## Flujo de trabajo
+
+- Se trabaja en la rama `develop`.
+- Para publicar, abrí un Pull Request de `develop` → `main`. Al mergearlo, Vercel despliega `main` a producción.
