@@ -34,3 +34,7 @@ Entrenador interactivo (Next.js 15, App Router, TypeScript, sin librerías de UI
 ## Persistencia
 
 Sin `MONGODB_URI` (opcional `DB_NAME`, por defecto `ios_trainer`) la app funciona solo con localStorage; `/api/progress` responde 501 y la UI lo indica. Ver README para deploy en Vercel.
+
+## Ramas
+
+Trabajar y commitear en `develop`. `main` solo recibe cambios por PR desde `develop`; Vercel despliega `main`.

@@ -12,7 +12,7 @@ const g = globalThis as typeof globalThis & { _mongoClient?: Promise<MongoClient
 export async function progressCollection(): Promise<Collection<ProgressDoc> | null> {
   if (!MONGODB_URI) return null;
   if (!g._mongoClient) {
-    g._mongoClient = new MongoClient(MONGODB_URI, { serverSelectionTimeoutMS: 8000 })
+    g._mongoClient = new MongoClient(MONGODB_URI, { serverSelectionTimeoutMS: 5000 })
       .connect()
       .catch((e) => {
         g._mongoClient = undefined; // reintenta en la próxima request
