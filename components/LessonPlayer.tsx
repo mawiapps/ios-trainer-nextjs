@@ -1,12 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Lesson, Step } from "@/data/lessons";
+import { Step } from "@/data/lessons";
 import Code from "@/components/Code";
 import Inline from "@/components/Inline";
+import { useI18n } from "@/lib/i18n";
 
-type Props = { lesson: Lesson; done: boolean; onComplete: () => void; onExit: () => void };
+type Props = { lesson: { title: string; goal: string; steps: Step[] }; done: boolean; onComplete: () => void; onExit: () => void; backLabel?: string };
 
-export default function LessonPlayer({ lesson, done, onComplete, onExit }: Props) {
+export default function LessonPlayer({ lesson, done, onComplete, onExit, backLabel }: Props) {
+  const { t } = useI18n();
   const [i, setI] = useState(0);
   const [solved, setSolved] = useState<Record<number, boolean>>({});
   const step = lesson.steps[i];
@@ -24,9 +26,9 @@ export default function LessonPlayer({ lesson, done, onComplete, onExit }: Props
   return (
     <>
       <div className="row" style={{ marginBottom: 6 }}>
-        <button className="btn small ghost" onClick={onExit}>← Lecciones</button>
+        <button className="btn small ghost" onClick={onExit}>{backLabel ?? t("lessons.back")}</button>
         <span className="spacer" />
-        <span className="muted">Paso {i + 1} / {total}</span>
+        <span className="muted">{t("player.step", { n: i + 1, total })}</span>
       </div>
       <div className="progress-bar"><div style={{ width: `${((i + (canNext ? 1 : 0)) / total) * 100}%` }} /></div>
       <h1 style={{ fontSize: 22, marginTop: 14 }}>{lesson.title}</h1>
@@ -40,24 +42,25 @@ export default function LessonPlayer({ lesson, done, onComplete, onExit }: Props
       </div>
 
       <div className="row">
-        <button className="btn ghost" disabled={i === 0} onClick={() => setI(i - 1)}>← Anterior</button>
+        <button className="btn ghost" disabled={i === 0} onClick={() => setI(i - 1)}>{t("common.prev")}</button>
         <span className="spacer" />
-        <button className="btn primary" disabled={!canNext} onClick={next}>{isLast ? (done ? "Terminar" : "Completar lección ✓") : "Siguiente →"}</button>
+        <button className="btn primary" disabled={!canNext} onClick={next}>{isLast ? (done ? t("player.finish") : t("player.complete")) : t("common.next")}</button>
       </div>
     </>
   );
 }
 
 function Explain({ step }: { step: Extract<Step, { kind: "explain" }> }) {
+  const { t } = useI18n();
   return (
     <>
-      <span className="tag">Explicación</span>
+      <span className="tag">{t("player.explanation")}</span>
       <h3>{step.title}</h3>
       {step.body.map((p, k) => <p key={k} style={{ fontSize: 15 }}><Inline text={p} /></p>)}
       {step.code && <Code>{step.code}</Code>}
       {step.output && (
         <div style={{ marginTop: 8 }}>
-          <div className="muted" style={{ marginBottom: 4 }}>Salida</div>
+          <div className="muted" style={{ marginBottom: 4 }}>{t("player.output")}</div>
           <pre style={{ background: "#0b0d11", color: "var(--ok)" }}>{step.output}</pre>
         </div>
       )}
@@ -66,6 +69,7 @@ function Explain({ step }: { step: Extract<Step, { kind: "explain" }> }) {
 }
 
 function Predict({ step, onSolved }: { step: Extract<Step, { kind: "predict" }>; onSolved: () => void }) {
+  const { t } = useI18n();
   const [picked, setPicked] = useState<number | null>(null);
   const [tries, setTries] = useState(0);
   const correct = picked === step.answer;
@@ -77,8 +81,8 @@ function Predict({ step, onSolved }: { step: Extract<Step, { kind: "predict" }>;
   }
   return (
     <>
-      <span className="tag accent">Practicá: {step.prompt ? "pregunta" : "¿qué imprime?"}</span>
-      <h3>{step.prompt ?? "¿Qué imprime este código?"}</h3>
+      <span className="tag accent">{step.prompt ? t("player.tagQuestion") : t("player.tagPredict")}</span>
+      <h3><Inline text={step.prompt ?? t("player.predictDefault")} /></h3>
       {step.code && <div style={{ margin: "8px 0 14px" }}><Code>{step.code}</Code></div>}
       {step.options.map((o, idx) => {
         let cls = "option";
@@ -90,7 +94,7 @@ function Predict({ step, onSolved }: { step: Extract<Step, { kind: "predict" }>;
       })}
       {picked !== null && (
         <div className={`feedback ${correct ? "ok" : "bad"}`}>
-          <b>{correct ? "Correcto." : "No es esa; probá de nuevo."}</b> {correct ? <Inline text={step.explanation} /> : tries >= 2 ? <span>Pista: <Inline text={step.explanation} /></span> : null}
+          <b>{correct ? t("common.correct") : t("player.tryAgain")}</b> {correct ? <Inline text={step.explanation} /> : tries >= 2 ? <span>{t("player.hintPrefix")} <Inline text={step.explanation} /></span> : null}
         </div>
       )}
     </>
@@ -100,6 +104,7 @@ function Predict({ step, onSolved }: { step: Extract<Step, { kind: "predict" }>;
 function norm(s: string) { return s.trim().replace(/\s+/g, " "); }
 
 function Fill({ step, onSolved }: { step: Extract<Step, { kind: "fill" }>; onSolved: () => void }) {
+  const { t } = useI18n();
   const [val, setVal] = useState("");
   const [state, setState] = useState<"idle" | "ok" | "bad">("idle");
   const [tries, setTries] = useState(0);
@@ -112,7 +117,7 @@ function Fill({ step, onSolved }: { step: Extract<Step, { kind: "fill" }>; onSol
   }
   return (
     <>
-      <span className="tag accent">Practicá: completá el hueco</span>
+      <span className="tag accent">{t("player.tagFill")}</span>
       <h3><Inline text={step.prompt} /></h3>
       <pre style={{ whiteSpace: "pre-wrap" }}>
         {before}
@@ -128,16 +133,17 @@ function Fill({ step, onSolved }: { step: Extract<Step, { kind: "fill" }>; onSol
         {after}
       </pre>
       <div className="row" style={{ marginTop: 10 }}>
-        <button className="btn primary" onClick={check} disabled={!val.trim() || state === "ok"}>Comprobar</button>
+        <button className="btn primary" onClick={check} disabled={!val.trim() || state === "ok"}>{t("player.check")}</button>
         {step.hint && tries >= 1 && state !== "ok" && <span className="muted">💡 <Inline text={step.hint} /></span>}
       </div>
-      {state === "ok" && <div className="feedback ok"><b>Correcto.</b> <Inline text={step.explanation} /></div>}
-      {state === "bad" && <div className="feedback bad"><b>No es eso.</b> {tries >= 3 ? <span>Respuesta esperada: <code className="inline">{step.accept[0].replace(/^\^|\$$/g, "").replace(/\\/g, "").replace(/\(\\\)/g, "()")}</code>. <Inline text={step.explanation} /></span> : "Revisá la explicación anterior e intentá otra vez."}</div>}
+      {state === "ok" && <div className="feedback ok"><b>{t("common.correct")}</b> <Inline text={step.explanation} /></div>}
+      {state === "bad" && <div className="feedback bad"><b>{t("player.notThat")}</b> {tries >= 3 ? <span>{t("player.expected")} <code className="inline">{step.accept[0].replace(/^\^|\$$/g, "").replace(/\\/g, "").replace(/\(\\\)/g, "()")}</code>. <Inline text={step.explanation} /></span> : t("player.reviewPrev")}</div>}
     </>
   );
 }
 
 function WriteStep({ step, onSolved }: { step: Extract<Step, { kind: "write" }>; onSolved: () => void }) {
+  const { t } = useI18n();
   const [code, setCode] = useState(step.starter ?? "");
   const [result, setResult] = useState<{ checks: { label: string; ok: boolean }[]; warnings: string[] } | null>(null);
   const [showSol, setShowSol] = useState(false);
@@ -160,24 +166,24 @@ function WriteStep({ step, onSolved }: { step: Extract<Step, { kind: "write" }>;
   const allOk = result && result.checks.every((c) => c.ok) && result.warnings.length === 0;
   return (
     <>
-      <span className="tag accent">Practicá: escribí el código</span>
+      <span className="tag accent">{t("player.tagWrite")}</span>
       <h3><Inline text={step.prompt} /></h3>
       <textarea className="code" style={{ minHeight: 180 }} spellCheck={false} value={code} onChange={(e) => setCode(e.target.value)} onKeyDown={onKey} />
       <div className="row" style={{ marginTop: 10 }}>
-        <button className="btn primary" onClick={check} disabled={code.trim().length < 10}>Revisar</button>
-        {step.hint && <button className="btn ghost small" onClick={() => setShowHint(true)}>💡 Pista</button>}
-        <button className="btn ghost small" onClick={() => setShowSol((s) => !s)}>{showSol ? "Ocultar solución" : "Ver solución"}</button>
+        <button className="btn primary" onClick={check} disabled={code.trim().length < 10}>{t("player.review")}</button>
+        {step.hint && <button className="btn ghost small" onClick={() => setShowHint(true)}>{t("common.hint")}</button>}
+        <button className="btn ghost small" onClick={() => setShowSol((s) => !s)}>{showSol ? t("common.hideSolution") : t("common.showSolution")}</button>
       </div>
       {showHint && step.hint && <div className="feedback"><Inline text={step.hint} /></div>}
       {result && (
         <div className={`feedback ${allOk ? "ok" : ""}`} style={{ marginTop: 12 }}>
-          <b>{allOk ? "Tiene todo lo que necesita. " : "Todavía falta: "}</b>
+          <b>{allOk ? t("player.allGood") : t("player.missing")}</b>
           {result.checks.map((c, k) => <div key={k} className={`check ${c.ok ? "ok" : "miss"}`}><span className="dot">{c.ok ? "✓" : "✗"}</span><span><Inline text={c.label} /></span></div>)}
           {result.warnings.map((w, k) => <div key={k} className="check warn"><span className="dot">⚠</span><span><Inline text={w} /></span></div>)}
-          <div className="muted" style={{ marginTop: 6 }}>Chequeo de patrones, no ejecuta Swift. Compará con la solución para afinar.</div>
+          <div className="muted" style={{ marginTop: 6 }}>{t("player.patternNote")}</div>
         </div>
       )}
-      {showSol && <div style={{ marginTop: 12 }}><div className="muted" style={{ marginBottom: 4 }}>Solución de referencia</div><Code>{step.solution}</Code></div>}
+      {showSol && <div style={{ marginTop: 12 }}><div className="muted" style={{ marginBottom: 4 }}>{t("common.solutionRef")}</div><Code>{step.solution}</Code></div>}
     </>
   );
 }

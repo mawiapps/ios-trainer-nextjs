@@ -1,15 +1,18 @@
 "use client";
 import McqGame from "@/components/McqGame";
-import { outputQuestions } from "@/data/output";
+import { useContent } from "@/lib/content";
+import { useI18n } from "@/lib/i18n";
 import { useProgress } from "@/lib/progress";
 
 export default function SalidaPage() {
   const { progress, update } = useProgress();
+  const { outputQuestions } = useContent();
+  const { t } = useI18n();
   return (
     <McqGame
-      title="Predice la salida"
-      lead="Leé el Swift y decidí qué imprime (o si no compila). Es el entrenamiento más directo para las trampas del lenguaje."
-      defaultQuestion="¿Qué imprime este código?"
+      title={t("output.title")}
+      lead={t("output.lead")}
+      defaultQuestion={t("output.question")}
       items={outputQuestions}
       done={progress.output}
       onAnswer={(id, ok) => { if (ok) update("output", id, true); }}

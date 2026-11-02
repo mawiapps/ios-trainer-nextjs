@@ -1,15 +1,12 @@
 "use client";
 import Link from "next/link";
 import { useProgress } from "@/lib/progress";
-import { flashcards } from "@/data/flashcards";
-import { quiz } from "@/data/quiz";
-import { outputQuestions } from "@/data/output";
-import { codeExercises } from "@/data/code";
-import { bugExercises } from "@/data/bugs";
-import { interviewQuestions } from "@/data/interview";
-import { theory } from "@/data/theory";
-import { lessons } from "@/data/lessons";
+import { useContent } from "@/lib/content";
+import { useI18n } from "@/lib/i18n";
+import { courses } from "@/data/courses/catalog";
+import { PASS_SCORE } from "@/components/CourseExam";
 import SyncPanel from "@/components/SyncPanel";
+import Rich from "@/components/Rich";
 
 function Bar({ value, total }: { value: number; total: number }) {
   const pct = total ? Math.round((value / total) * 100) : 0;
@@ -23,21 +20,37 @@ function Bar({ value, total }: { value: number; total: number }) {
 
 export default function Home() {
   const { progress, reset, loaded, syncCode, setSyncCode, sync, exportJSON, importJSON } = useProgress();
+  const { t } = useI18n();
+  const c = useContent();
   const p = progress;
+  const courseLessons = Object.keys(p.lessons).filter((k) => k.includes("/") && p.lessons[k]).length;
+  const passed = courses.filter((x) => (p.exams[x.id] ?? 0) >= PASS_SCORE).length;
   const modes = [
-    { href: "/lecciones", title: "🎓 Lecciones interactivas", desc: "Empezá acá. Cada concepto explicado con ejemplos y practicado en el momento: predecir salida, completar, escribir.", done: Object.values(p.lessons ?? {}).filter(Boolean).length, total: lessons.length },
-    { href: "/teoria", title: "📖 Referencia rápida", desc: "Resumen de todo el temario para repasar el día antes: snippets, trampas, checklist.", done: Object.values(p.theory).filter(Boolean).length, total: theory.length },
-    { href: "/flashcards", title: "🃏 Flashcards", desc: "Dale vuelta a la tarjeta, decidí si lo sabías. Las que fallás vuelven.", done: Object.values(p.flash).filter((v) => v === "ok").length, total: flashcards.length },
-    { href: "/quiz", title: "✅ Quiz con feedback", desc: "Opción múltiple estilo TestGorilla; cada respuesta explica por qué.", done: Object.values(p.quiz).filter(Boolean).length, total: quiz.length },
-    { href: "/salida", title: "🔮 Predice la salida", desc: "Leé Swift y adiviná qué imprime. Entrena las trampas del lenguaje.", done: Object.values(p.output).filter(Boolean).length, total: outputQuestions.length },
-    { href: "/codigo", title: "⌨️ Escribe el código", desc: "Resolvé el reto de memoria sin autocompletado; recibís checklist y solución.", done: Object.values(p.code).filter((v) => v >= 70).length, total: codeExercises.length },
-    { href: "/bugs", title: "🐛 Caza el bug", desc: "Hacé clic en la línea con el error y aprendé el patrón.", done: Object.values(p.bugs).filter(Boolean).length, total: bugExercises.length },
-    { href: "/entrevista", title: "🎤 Entrevista", desc: "Respondé en voz alta o por escrito, comparás con puntos clave y te autoevaluás.", done: Object.values(p.interview).filter((v) => v >= 4).length, total: interviewQuestions.length },
+    { href: "/lecciones", title: `🎓 ${t("nav.lessons")}`, desc: t("home.mode.lessons"), done: c.lessons.filter((l) => p.lessons[l.id]).length, total: c.lessons.length },
+    { href: "/teoria", title: `📖 ${t("nav.theory")}`, desc: t("home.mode.theory"), done: Object.values(p.theory).filter(Boolean).length, total: c.theory.length },
+    { href: "/flashcards", title: `🃏 ${t("nav.flashcards")}`, desc: t("home.mode.flashcards"), done: c.flashcards.filter((f) => p.flash[f.id] === "ok").length, total: c.flashcards.length },
+    { href: "/quiz", title: `✅ ${t("nav.quiz")}`, desc: t("home.mode.quiz"), done: Object.values(p.quiz).filter(Boolean).length, total: c.quiz.length },
+    { href: "/salida", title: `🔮 ${t("nav.output")}`, desc: t("home.mode.output"), done: Object.values(p.output).filter(Boolean).length, total: c.outputQuestions.length },
+    { href: "/codigo", title: `⌨️ ${t("nav.code")}`, desc: t("home.mode.code"), done: Object.values(p.code).filter((v) => v >= 70).length, total: c.codeExercises.length },
+    { href: "/bugs", title: `🐛 ${t("nav.bugs")}`, desc: t("home.mode.bugs"), done: Object.values(p.bugs).filter(Boolean).length, total: c.bugExercises.length },
+    { href: "/entrevista", title: `🎤 ${t("nav.interview")}`, desc: t("home.mode.interview"), done: Object.values(p.interview).filter((v) => v >= 4).length, total: c.interviewQuestions.length },
   ];
   return (
     <>
-      <h1>Entrenador iOS Sr · GlobalTask</h1>
-      <p className="lead">Fundamentos de Swift, algoritmos, REST, SwiftUI, seguridad y release — en juegos cortos con feedback inmediato. Sin timers: el objetivo es que te quede en la cabeza.</p>
+      <h1>{t("home.title")}</h1>
+      <p className="lead">{t("home.lead")}</p>
+      <Link href="/cursos" className="card" style={{ display: "block", borderColor: "var(--accent)" }}>
+        <h3 style={{ marginTop: 0 }}>{t("home.coursesTitle")}</h3>
+        <p className="muted">{t("home.coursesDesc")}</p>
+        {loaded && (
+          <>
+            <Bar value={passed} total={courses.length} />
+            <div className="muted">{t("home.coursesProgress", { done: courseLessons, exams: passed })}</div>
+          </>
+        )}
+      </Link>
+      <h2>{t("home.practice")}</h2>
+      <p className="muted" style={{ marginTop: -4 }}>{t("home.practiceLead")}</p>
       <div className="grid">
         {modes.map((m) => (
           <Link key={m.href} href={m.href} className="card">
@@ -47,16 +60,11 @@ export default function Home() {
           </Link>
         ))}
       </div>
-      <h2>Ruta sugerida</h2>
+      <h2>{t("home.route")}</h2>
       <ol>
-        <li>Hacé las <b>Lecciones</b> de Swift core en orden (una o dos por sesión), después las de Algoritmos.</li>
-        <li>Pasá las <b>Flashcards</b> de Swift hasta tener todas en verde.</li>
-        <li>Jugá <b>Predice la salida</b> y <b>Caza el bug</b>: ahí están las trampas que fallan bajo presión.</li>
-        <li><b>Escribe el código</b> de memoria, uno por día, sin mirar la solución hasta enviar.</li>
-        <li>Lecciones de REST, ingeniería e iOS; después <b>Quiz</b> y <b>Entrevista</b> para preparar las preguntas custom y la entrevista técnica.</li>
-        <li>El día antes: <b>Referencia rápida</b> + flashcards pendientes.</li>
+        {[1, 2, 3, 4].map((n) => <li key={n}><Rich text={t(`home.route.${n}`)} /></li>)}
       </ol>
-      <h2>Sincronización</h2>
+      <h2>{t("home.sync")}</h2>
       {loaded && <SyncPanel syncCode={syncCode} setSyncCode={setSyncCode} sync={sync} exportJSON={exportJSON} importJSON={importJSON} reset={reset} />}
     </>
   );

@@ -1,6 +1,9 @@
-# iOS Trainer – Prep para el assessment de GlobalTask (TestGorilla)
+# iOS Trainer
 
-Entrenador interactivo en Next.js para fijar los fundamentos del plan de preparación: Swift core, algoritmos, ingeniería de software, REST/JWT, SwiftUI/arquitectura, seguridad mobile y testing/release. Sin temporizadores; todo con feedback inmediato.
+Plataforma interactiva en Next.js para aprender iOS de cero a arquitecto, en español o inglés (selector en la barra lateral).
+
+- **Cursos** (`/cursos`): 20 cursos en orden pedagógico, de Swift desde cero a system design: Swift, SwiftUI, UIKit, concurrencia, networking, testing, MVVM/Coordinator, VIPER/Clean, TCA, modularidad, legacy, CI/CD, App Store, compras in-app y suscripciones, seguridad, performance, capacidades del sistema y entrevistas. Cada curso tiene lecciones interactivas, un reto final, flashcards de repaso y un examen (se aprueba con 70 %).
+- **Práctica libre**: los modos originales, pensados para el assessment de TestGorilla (lecciones sueltas, referencia rápida, flashcards, quiz, predecir la salida, escribir código, cazar bugs, entrevista).
 
 ## Correr en local
 
@@ -37,6 +40,9 @@ Para correrlo local con sync, copiá `.env.example` a `.env.local` y completá `
 Sin base configurada, la app funciona igual en modo local, y podés mover el progreso con **Exportar / Importar** (.json).
 
 ## Agregar contenido
+
+Los cursos viven en `data/courses/<id>/es.ts` y `en.ts`; las reglas están en [`docs/COURSE_AUTHORING.md`](docs/COURSE_AUTHORING.md) y `node scripts/validate-courses.mjs` las verifica. Los textos de la interfaz están en `locales/es.json` y `locales/en.json`.
+
 
 Las lecciones viven en `data/lessons/*.ts` (tipos de paso: `explain`, `predict`, `fill`, `write`). El resto del contenido vive en `data/*.ts` (flashcards, quiz, output, code, bugs, interview, theory). Agregá un objeto al array y listo; los tipos están en `data/types.ts`.
 

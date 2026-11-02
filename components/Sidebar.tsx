@@ -1,32 +1,46 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LOCALES, useI18n } from "@/lib/i18n";
 
-const items = [
-  { href: "/", icon: "🏠", label: "Inicio" },
-  { href: "/lecciones", icon: "🎓", label: "Lecciones" },
-  { href: "/teoria", icon: "📖", label: "Referencia rápida" },
-  { href: "/flashcards", icon: "🃏", label: "Flashcards" },
-  { href: "/quiz", icon: "✅", label: "Quiz con feedback" },
-  { href: "/salida", icon: "🔮", label: "Predice la salida" },
-  { href: "/codigo", icon: "⌨️", label: "Escribe el código" },
-  { href: "/bugs", icon: "🐛", label: "Caza el bug" },
-  { href: "/entrevista", icon: "🎤", label: "Entrevista" },
+const main = [
+  { href: "/", icon: "🏠", key: "nav.home" },
+  { href: "/cursos", icon: "🧭", key: "nav.courses" },
+];
+const practice = [
+  { href: "/lecciones", icon: "🎓", key: "nav.lessons" },
+  { href: "/teoria", icon: "📖", key: "nav.theory" },
+  { href: "/flashcards", icon: "🃏", key: "nav.flashcards" },
+  { href: "/quiz", icon: "✅", key: "nav.quiz" },
+  { href: "/salida", icon: "🔮", key: "nav.output" },
+  { href: "/codigo", icon: "⌨️", key: "nav.code" },
+  { href: "/bugs", icon: "🐛", key: "nav.bugs" },
+  { href: "/entrevista", icon: "🎤", key: "nav.interview" },
 ];
 
 export default function Sidebar() {
   const path = usePathname();
+  const { t, locale, setLocale } = useI18n();
+  const isActive = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
+  const link = (it: (typeof main)[number]) => (
+    <Link key={it.href} href={it.href} className={isActive(it.href) ? "active" : ""}>
+      <span className="icon">{it.icon}</span>
+      {t(it.key)}
+    </Link>
+  );
   return (
     <aside className="sidebar">
       <div className="brand">iOS <span>Trainer</span></div>
-      <div className="brand-sub">Prep para el assessment de GlobalTask</div>
-      <nav className="nav">
-        {items.map((it) => (
-          <Link key={it.href} href={it.href} className={path === it.href ? "active" : ""}>
-            <span className="icon">{it.icon}</span>
-            {it.label}
-          </Link>
+      <div className="brand-sub">{t("brand.sub")}</div>
+      <div className="lang" role="group" aria-label={t("lang.label")}>
+        {LOCALES.map((l) => (
+          <button key={l} className={l === locale ? "on" : ""} aria-pressed={l === locale} onClick={() => setLocale(l)}>{l.toUpperCase()}</button>
         ))}
+      </div>
+      <nav className="nav">
+        {main.map(link)}
+        <div className="nav-section">{t("nav.practice")}</div>
+        {practice.map(link)}
       </nav>
     </aside>
   );
