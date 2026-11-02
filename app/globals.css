@@ -34,6 +34,13 @@ code.inline { background: var(--bg-3); padding: 1px 6px; border-radius: 6px; fon
 .nav a:hover { background: var(--bg-3); color: var(--text); }
 .nav a.active { background: var(--bg-3); color: var(--text); font-weight: 600; }
 .nav .icon { width: 22px; text-align: center; }
+.nav-section { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; margin: 16px 10px 6px; }
+.lang { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
+.lang button { background: transparent; border: none; color: var(--muted); padding: 4px 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.lang button.on { background: var(--bg-3); color: var(--text); }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
+.tabs button { background: none; border: none; border-bottom: 2px solid transparent; color: var(--muted); padding: 8px 14px; cursor: pointer; font-size: 14px; font-weight: 500; }
+.tabs button.on { color: var(--text); border-bottom-color: var(--accent); }
 .main { padding: 32px 40px; max-width: 980px; }
 h1 { font-size: 28px; margin: 0 0 6px; }
 h2 { font-size: 20px; margin: 28px 0 10px; }

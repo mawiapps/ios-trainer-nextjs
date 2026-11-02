@@ -9,11 +9,12 @@ export interface Progress {
   bugs: Record<string, boolean>;
   interview: Record<string, number>; // self score 1-5
   theory: Record<string, boolean>;
-  lessons: Record<string, boolean>;
+  lessons: Record<string, boolean>; // lecciones sueltas por id; de cursos como "<curso>/<lección>"
+  exams: Record<string, number>; // mejor nota (0-100) por curso
   updatedAt?: number;
 }
 
-const EMPTY: Progress = { flash: {}, quiz: {}, output: {}, code: {}, bugs: {}, interview: {}, theory: {}, lessons: {} };
+const EMPTY: Progress = { flash: {}, quiz: {}, output: {}, code: {}, bugs: {}, interview: {}, theory: {}, lessons: {}, exams: {} };
 const KEY = "ios-trainer-progress-v1";
 const CODE_KEY = "ios-trainer-sync-code";
 

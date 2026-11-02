@@ -1,14 +1,17 @@
 "use client";
 import McqGame from "@/components/McqGame";
-import { quiz } from "@/data/quiz";
+import { useContent } from "@/lib/content";
+import { useI18n } from "@/lib/i18n";
 import { useProgress } from "@/lib/progress";
 
 export default function QuizPage() {
   const { progress, update } = useProgress();
+  const { quiz } = useContent();
+  const { t } = useI18n();
   return (
     <McqGame
-      title="Quiz con feedback"
-      lead="Preguntas de opción múltiple como las de los tests de 10 minutos de TestGorilla. Cada respuesta explica por qué, acertés o no."
+      title={t("quiz.title")}
+      lead={t("quiz.lead")}
       items={quiz}
       done={progress.quiz}
       onAnswer={(id, ok) => { if (ok) update("quiz", id, true); }}

@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { flashcards } from "@/data/flashcards";
-import { Topic, TOPIC_LABEL } from "@/data/types";
+import { Topic } from "@/data/types";
+import { useContent } from "@/lib/content";
+import { useI18n } from "@/lib/i18n";
 import { useProgress, shuffle } from "@/lib/progress";
 import TopicFilter from "@/components/TopicFilter";
 import Code from "@/components/Code";
@@ -9,6 +10,8 @@ import Inline from "@/components/Inline";
 
 export default function Flashcards() {
   const { progress, update, loaded } = useProgress();
+  const { flashcards } = useContent();
+  const { t } = useI18n();
   const [topic, setTopic] = useState<Topic | "all">("all");
   const [onlyPending, setOnlyPending] = useState(true);
   const [deck, setDeck] = useState<string[]>([]);
@@ -16,7 +19,7 @@ export default function Flashcards() {
   const [flipped, setFlipped] = useState(false);
   const topics = Array.from(new Set(flashcards.map((f) => f.topic)));
 
-  const pool = useMemo(() => flashcards.filter((f) => (topic === "all" || f.topic === topic) && (!onlyPending || progress.flash[f.id] !== "ok")), [topic, onlyPending, progress.flash]);
+  const pool = useMemo(() => flashcards.filter((f) => (topic === "all" || f.topic === topic) && (!onlyPending || progress.flash[f.id] !== "ok")), [flashcards, topic, onlyPending, progress.flash]);
 
   useEffect(() => {
     if (!loaded) return;
@@ -39,25 +42,25 @@ export default function Flashcards() {
 
   return (
     <>
-      <h1>Flashcards</h1>
-      <p className="lead">Leé la pregunta, respondé en tu cabeza, dale vuelta y sé honesto: "Lo sabía" la saca del mazo, "Repetir" la manda al final.</p>
+      <h1>{t("flash.title")}</h1>
+      <p className="lead">{t("flash.lead")}</p>
       <TopicFilter topics={topics} value={topic} onChange={setTopic} />
       <div className="row" style={{ marginBottom: 14 }}>
-        <label className="muted"><input type="checkbox" checked={onlyPending} onChange={(e) => setOnlyPending(e.target.checked)} /> Solo pendientes</label>
+        <label className="muted"><input type="checkbox" checked={onlyPending} onChange={(e) => setOnlyPending(e.target.checked)} /> {t("flash.onlyPending")}</label>
         <span className="spacer" />
-        <span className="muted">Dominadas: {okCount} / {flashcards.length}</span>
+        <span className="muted">{t("flash.mastered", { n: okCount, total: flashcards.length })}</span>
       </div>
       {!card ? (
         <div className="card">
-          <h3>🎉 Mazo terminado</h3>
-          <p className="muted">No quedan tarjetas con este filtro. Cambiá de tema o desactivá "Solo pendientes" para repasar todo.</p>
-          <button className="btn" onClick={() => { setDeck(shuffle(pool.map((f) => f.id))); setI(0); }}>Volver a barajar</button>
+          <h3>{t("flash.deckDone")}</h3>
+          <p className="muted">{t("flash.deckDoneText")}</p>
+          <button className="btn" onClick={() => { setDeck(shuffle(pool.map((f) => f.id))); setI(0); }}>{t("flash.reshuffle")}</button>
         </div>
       ) : (
         <>
           <div className="card flash" onClick={() => setFlipped((f) => !f)}>
             <div className="row" style={{ marginBottom: 10 }}>
-              <span className="tag">{TOPIC_LABEL[card.topic]}</span>
+              <span className="tag">{t(`topic.${card.topic}`)}</span>
               <span className="spacer" />
               <span className="muted">{i + 1} / {deck.length}</span>
             </div>
@@ -69,15 +72,15 @@ export default function Flashcards() {
                 {card.code && <Code>{card.code}</Code>}
               </div>
             )}
-            <div className="muted" style={{ marginTop: 16 }}>{flipped ? "" : "Clic para ver la respuesta"}</div>
+            <div className="muted" style={{ marginTop: 16 }}>{flipped ? "" : t("flash.clickToReveal")}</div>
           </div>
           <div className="row">
             {!flipped ? (
-              <button className="btn primary" onClick={() => setFlipped(true)}>Mostrar respuesta</button>
+              <button className="btn primary" onClick={() => setFlipped(true)}>{t("flash.show")}</button>
             ) : (
               <>
-                <button className="btn ok" onClick={() => grade("ok")}>✓ Lo sabía</button>
-                <button className="btn bad" onClick={() => grade("again")}>↻ Repetir</button>
+                <button className="btn ok" onClick={() => grade("ok")}>{t("flash.knew")}</button>
+                <button className="btn bad" onClick={() => grade("again")}>{t("flash.again")}</button>
               </>
             )}
           </div>
