@@ -1,17 +1,14 @@
 "use client";
 import { useRef, useState } from "react";
-import { SyncState } from "@/lib/progress";
+import { useProgress } from "@/lib/progress";
 import { useI18n } from "@/lib/i18n";
 
-export default function SyncPanel({ syncCode, setSyncCode, sync, exportJSON, importJSON, reset }: {
-  syncCode: string; setSyncCode: (c: string) => Promise<void>; sync: SyncState;
-  exportJSON: () => string; importJSON: (t: string) => void; reset: () => void;
-}) {
+// Cuenta: código personal, estado de la nube, salir, exportar/importar y reiniciar.
+export default function SyncPanel() {
   const { t } = useI18n();
-  const [draft, setDraft] = useState(syncCode);
+  const { syncCode, sync, signOut, exportJSON, importJSON, reset } = useProgress();
   const [msg, setMsg] = useState("");
   const file = useRef<HTMLInputElement>(null);
-  const valid = /^[a-z0-9-_]{6,64}$/i.test(draft.trim());
 
   function download() {
     const blob = new Blob([exportJSON()], { type: "application/json" });
@@ -26,19 +23,21 @@ export default function SyncPanel({ syncCode, setSyncCode, sync, exportJSON, imp
     catch { setMsg(t("sync.invalid")); }
     e.target.value = "";
   }
+  async function onSignOut() {
+    if (!confirm(t("sync.signOutConfirm"))) return;
+    if (!(await signOut())) setMsg(t("sync.signOutFailed"));
+  }
 
   return (
     <div className="card">
       <h3 style={{ marginTop: 0 }}>{t("sync.title")}</h3>
-      <p className="muted">{t("sync.desc")}</p>
       <div className="row">
-        <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={t("sync.placeholder")} spellCheck={false}
-          style={{ background: "#0b0d11", border: "1px solid var(--border)", color: "var(--text)", padding: "8px 12px", borderRadius: 8, fontFamily: "var(--mono)", minWidth: 220 }} />
-        <button className="btn primary" disabled={!valid || draft.trim().toLowerCase() === syncCode} onClick={async () => { await setSyncCode(draft); setMsg(""); }}>{t("sync.connect")}</button>
-        {syncCode && <button className="btn ghost" onClick={() => { setSyncCode(""); setDraft(""); }}>{t("sync.disconnect")}</button>}
+        <span>{t("sync.yourCode")} <code className="inline">{syncCode}</code></span>
+        <span className="muted">· {t(`sync.state.${sync}`)}</span>
         <span className="spacer" />
-        <span className="muted">{syncCode ? t("sync.status", { state: t(`sync.state.${sync}`), code: syncCode }) : t("sync.state.off")}</span>
+        <button className="btn small ghost" onClick={onSignOut}>{t("sync.signOut")}</button>
       </div>
+      <p className="muted">{t("sync.desc")}</p>
       <div className="row" style={{ marginTop: 12 }}>
         <button className="btn small" onClick={download}>{t("sync.export")}</button>
         <button className="btn small" onClick={() => file.current?.click()}>{t("sync.import")}</button>

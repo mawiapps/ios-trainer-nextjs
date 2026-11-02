@@ -1,23 +1,25 @@
 # iOS Trainer
 
-Plataforma interactiva (Next.js 15, App Router, TypeScript, sin librerías de UI) para aprender iOS de cero a arquitecto: 20 cursos en orden más modos de práctica libre (nacidos para el assessment de TestGorilla). Bilingüe: español rioplatense y inglés.
+Plataforma interactiva (Next.js 15, App Router, TypeScript, sin librerías de UI) para aprender iOS de cero a arquitecto: 20 módulos en orden, cada uno con lecciones, flashcards, práctica y quiz, más un módulo "Prep TestGorilla" con los modos de práctica originales. Bilingüe: español rioplatense y inglés.
 
 ## Comandos
 
 - `npm run dev` → http://localhost:3000
 - `npm run build` → debe compilar sin errores antes de entregar cambios
 - `npx tsc --noEmit` → type-check rápido
-- `node scripts/validate-courses.mjs [id ...]` → valida el contenido de los cursos (mínimos, regex, soluciones vs checks, paridad es↔en)
+- `node scripts/validate-courses.mjs [id ...]` → valida el contenido de los módulos (mínimos, regex, soluciones vs checks, paridad es↔en, `stats.json` al día)
+- `node scripts/course-stats.mjs` → regenera `data/courses/stats.json` (ids y cantidades por módulo para calcular el %); correrlo después de editar contenido
 
 ## Estructura
 
-- `app/cursos` lista de cursos y `app/cursos/[id]` (lecciones, repaso, examen; componentes `CourseView`, `CourseDeck`, `CourseExam`).
-- `app/` páginas de práctica libre (una por modo): `lecciones`, `teoria` (referencia rápida), `flashcards`, `quiz`, `salida` (predice la salida), `codigo`, `bugs`, `entrevista`. `app/api/progress` = sync remoto.
-- `components/` UI compartida: `LessonPlayer` (motor de lecciones), `McqGame` (opción múltiple reutilizable), `SyncPanel`, `Inline` (renderiza `código` en backticks), `Code`.
+- `app/modulos` lista, `app/modulos/[id]` (`ModuleView`: pestañas Lecciones, Flashcards, Práctica, Quiz en `?tab=`; `CourseDeck`, `ModulePractice`, `CourseExam`) y `app/modulos/prep-testgorilla` (`PrepModuleView` con los modos de `components/prep/`). Las rutas viejas (`/cursos`, `/lecciones`, `/quiz`…) redirigen en `next.config.mjs`. `app/api/progress` = sync remoto.
+- `components/ProfileGate` pide el código personal antes de mostrar la app; `components/SyncPanel` es la cuenta (código, salir, exportar).
+- `components/` UI compartida: `LessonPlayer` (motor de lecciones; exporta `Predict`, `Fill`, `WriteStep`), `McqGame` (opción múltiple reutilizable), `SyncPanel`, `Inline` (renderiza `código` en backticks), `Code`.
 - `data/` contenido. Tipos en `data/types.ts`. Lecciones en `data/lessons/*.ts` (tipos de paso en `data/lessons/types.ts`).
-- `data/courses/` cursos: `catalog.ts` (orden, niveles, título/descripción en ambos idiomas), `<id>/es.ts` y `<id>/en.ts` (contenido, cargado de forma perezosa vía `index.ts`). Reglas de autoría en `docs/COURSE_AUTHORING.md`.
+- `data/courses/` módulos: `catalog.ts` (orden, niveles, título/descripción en ambos idiomas), `<id>/es.ts` y `<id>/en.ts` (contenido, cargado de forma perezosa vía `index.ts`). Reglas de autoría en `docs/COURSE_AUTHORING.md`.
 - `lib/i18n.tsx` (`useI18n`: `locale`, `t`) con textos de UI en `locales/es.json` y `locales/en.json`. `lib/content.ts` (`useContent`) elige `data/es.ts` o `data/en/` para la práctica libre.
-- `lib/progress.ts` hook `useProgress`: localStorage + sync opcional con MongoDB (`lib/mongo.ts`, colección `progress`) vía código de sincronización. Fusión por unión (nunca pierde progreso). Las claves de cursos van con prefijo: `lessons["<curso>/<lección>"]`, `flash["<curso>/<tarjeta>"]`, `exams[<curso>]` = mejor nota.
+- `lib/modules.ts` % y próximo paso de cada módulo; `lib/prep.ts` % del módulo de preparación.
+- `lib/progress.ts` `ProgressProvider` + `useProgress` (un solo estado para toda la app): localStorage + sync con MongoDB (`lib/mongo.ts`, colección `progress`) vía código personal (obligatorio, lo pide `ProfileGate`; se vuelve a sincronizar al volver a la pestaña). Fusión por unión (nunca pierde progreso). Las claves de cursos van con prefijo: `lessons["<curso>/<lección>"]`, `flash["<curso>/<tarjeta>"]`, `exams[<curso>]` = mejor nota.
 
 ## Reglas de contenido
 

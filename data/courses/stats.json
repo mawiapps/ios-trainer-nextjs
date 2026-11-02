@@ -1,0 +1,563 @@
+{
+  "c01-swift-basics": {
+    "lessons": [
+      "variables-types",
+      "optionals",
+      "collections",
+      "control-flow",
+      "functions",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "fc-let-var",
+      "fc-inference",
+      "fc-conversion",
+      "fc-int-division",
+      "fc-interpolation",
+      "fc-optional",
+      "fc-if-guard",
+      "fc-nil-coalescing",
+      "fc-chaining",
+      "fc-force-unwrap",
+      "fc-dict-lookup",
+      "fc-set",
+      "fc-switch",
+      "fc-ranges",
+      "fc-labels"
+    ],
+    "exam": 12
+  },
+  "c02-swift-intermediate": {
+    "lessons": [
+      "structs-classes",
+      "enums",
+      "closures",
+      "error-handling",
+      "codable",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "fc-value-reference",
+      "fc-mutating",
+      "fc-let-class",
+      "fc-cow",
+      "fc-final",
+      "fc-associated",
+      "fc-rawvalue",
+      "fc-trailing",
+      "fc-escaping",
+      "fc-weak-self",
+      "fc-capture-list",
+      "fc-try-variants",
+      "fc-typed-throws",
+      "fc-snake-case",
+      "fc-unknown-enum"
+    ],
+    "exam": 12
+  },
+  "c03-protocols-generics-memory": {
+    "lessons": [
+      "protocols-in-practice",
+      "standard-protocols",
+      "generics",
+      "some-vs-any",
+      "memory-arc",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "fc-protocol-default",
+      "fc-static-dispatch",
+      "fc-synthesized",
+      "fc-hash-rule",
+      "fc-comparable",
+      "fc-identifiable",
+      "fc-where",
+      "fc-associatedtype",
+      "fc-some-any",
+      "fc-primary-assoc",
+      "fc-type-erasure",
+      "fc-weak-unowned",
+      "fc-delegate",
+      "fc-timer",
+      "fc-memory-graph"
+    ],
+    "exam": 12
+  },
+  "c04-swiftui-essentials": {
+    "lessons": [
+      "views-modifiers",
+      "state",
+      "observation",
+      "lists-forms",
+      "navigation-lifecycle",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "fc-view-body",
+      "fc-some-view",
+      "fc-modifier-order",
+      "fc-spacer",
+      "fc-sf-symbols",
+      "fc-state",
+      "fc-binding",
+      "fc-single-source",
+      "fc-env-storage-focus",
+      "fc-observable",
+      "fc-stateobject",
+      "fc-identity",
+      "fc-nav-path",
+      "fc-task",
+      "fc-task-id"
+    ],
+    "exam": 12
+  },
+  "c05-uikit-essentials": {
+    "lessons": [
+      "vc-lifecycle",
+      "auto-layout",
+      "table-views",
+      "modern-collections",
+      "navigation",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "fc-lifecycle-order",
+      "fc-viewdidload-once",
+      "fc-scene-delegate",
+      "fc-tamic",
+      "fc-hugging-compression",
+      "fc-priority",
+      "fc-unsatisfiable",
+      "fc-stack-hidden",
+      "fc-prepare-reuse",
+      "fc-insert-rows",
+      "fc-diffable-ids",
+      "fc-compositional",
+      "fc-cell-registration",
+      "fc-weak-delegate",
+      "fc-sheet-lifecycle"
+    ],
+    "exam": 12
+  },
+  "c06-concurrency": {
+    "lessons": [
+      "main-thread-gcd",
+      "async-await",
+      "bridging",
+      "actors",
+      "strict-concurrency",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "fc-main-thread",
+      "fc-sync-deadlock",
+      "fc-serial-concurrent",
+      "fc-dispatch-group",
+      "fc-operation-queue",
+      "fc-async-let-group",
+      "fc-task-detached",
+      "fc-cancellation",
+      "fc-continuation",
+      "fc-async-stream",
+      "fc-actor",
+      "fc-reentrancy",
+      "fc-sendable",
+      "fc-swift62",
+      "fc-combine-cancellable"
+    ],
+    "exam": 12
+  },
+  "c07-networking-persistence": {
+    "lessons": [
+      "urlsession-async",
+      "api-client",
+      "pagination-search",
+      "images-caching",
+      "persistence",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "fc-status-no-throw",
+      "fc-urlcomponents",
+      "fc-timeouts",
+      "fc-endpoint",
+      "fc-http-client-protocol",
+      "fc-error-buckets",
+      "fc-retry",
+      "fc-token-refresh",
+      "fc-cursor",
+      "fc-infinite-scroll",
+      "fc-debounce",
+      "fc-nscache-urlcache",
+      "fc-downsample",
+      "fc-where-to-store",
+      "fc-offline-first"
+    ],
+    "exam": 12
+  },
+  "c08-testing": {
+    "lessons": [
+      "xctest-basics",
+      "swift-testing",
+      "test-doubles",
+      "hard-parts",
+      "beyond-unit",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "fc-setup-vs-init",
+      "fc-xctunwrap",
+      "fc-expect-require",
+      "fc-arguments",
+      "fc-expect-throws",
+      "fc-stub-spy",
+      "fc-fake-mock",
+      "fc-overspecified",
+      "fc-clock",
+      "fc-userdefaults",
+      "fc-urlprotocol",
+      "fc-a11y-id",
+      "fc-snapshot-first",
+      "fc-coverage",
+      "fc-tdd"
+    ],
+    "exam": 12
+  },
+  "c09-mvvm-coordinator": {
+    "lessons": [
+      "mvc-massive-vc",
+      "mvvm-swiftui",
+      "mvvm-uikit",
+      "testing-viewmodel",
+      "coordinators",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "fc-massive-vc",
+      "fc-mvvm-roles",
+      "fc-state-enum",
+      "fc-observable-wrappers",
+      "fc-mainactor-vm",
+      "fc-init-injection",
+      "fc-published-willset",
+      "fc-binding-cycle",
+      "fc-inputs-outputs",
+      "fc-fake-spy",
+      "fc-test-task",
+      "fc-coordinator",
+      "fc-child-release",
+      "fc-router-path",
+      "fc-deeplink"
+    ],
+    "exam": 12
+  },
+  "c10-viper-clean": {
+    "lessons": [
+      "clean-layers",
+      "use-cases-repositories",
+      "viper-components",
+      "viper-wiring",
+      "viper-testing-tradeoffs",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "fc-dependency-rule",
+      "fc-entity-vs-dto",
+      "fc-dependency-inversion",
+      "fc-use-case",
+      "fc-repository-sources",
+      "fc-business-rule-place",
+      "fc-viper-roles",
+      "fc-presenter",
+      "fc-weak-refs",
+      "fc-anyobject",
+      "fc-builder",
+      "fc-module-output",
+      "fc-spy-stub",
+      "fc-test-interactor-task",
+      "fc-viper-overkill"
+    ],
+    "exam": 12
+  },
+  "c11-tca": {
+    "lessons": [
+      "unidirectional-flow",
+      "first-feature",
+      "effects-dependencies",
+      "composition-navigation",
+      "teststore",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "fc-three-parts",
+      "fc-reducer-macro",
+      "fc-observable-state",
+      "fc-effect-none",
+      "fc-run",
+      "fc-capture-state",
+      "fc-cancel-in-flight",
+      "fc-dependency-client",
+      "fc-binding",
+      "fc-scope",
+      "fc-identified-array",
+      "fc-presents",
+      "fc-stack",
+      "fc-teststore",
+      "fc-testclock"
+    ],
+    "exam": 12
+  },
+  "c12-modularity-di": {
+    "lessons": [
+      "xcode-anatomy",
+      "spm-packages",
+      "manual-di",
+      "di-containers",
+      "feature-modules",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "fc-target-vs-scheme",
+      "fc-inherited",
+      "fc-xcconfig-url",
+      "fc-pbxproj",
+      "fc-package-resolved",
+      "fc-version-rules",
+      "fc-bundle-module",
+      "fc-access-levels",
+      "fc-public-init",
+      "fc-composition-root",
+      "fc-hidden-deps",
+      "fc-factory-vs-swinject",
+      "fc-entry",
+      "fc-interface-module",
+      "fc-static-dynamic"
+    ],
+    "exam": 12
+  },
+  "c13-legacy-migrations": {
+    "lessons": [
+      "reading-objc",
+      "storyboards-xibs",
+      "uikit-swiftui-interop",
+      "safe-changes",
+      "swift6-migration",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "fc-nil-message",
+      "fc-copy-nsstring",
+      "fc-iuo-import",
+      "fc-assume-nonnull",
+      "fc-bridging",
+      "fc-objc-attr",
+      "fc-swift-name",
+      "fc-unknown-key",
+      "fc-prepare-outlets",
+      "fc-containment",
+      "fc-coordinator",
+      "fc-characterization",
+      "fc-seam",
+      "fc-strangler",
+      "fc-unchecked-sendable"
+    ],
+    "exam": 12
+  },
+  "c14-environments-cicd": {
+    "lessons": [
+      "configurations-schemes",
+      "xcconfig-per-environment",
+      "code-signing",
+      "versioning-fastlane",
+      "ci-pipelines-release",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "fc-config-vs-scheme",
+      "fc-compilation-conditions",
+      "fc-launch-args",
+      "fc-xcconfig-slashes",
+      "fc-info-plist-read",
+      "fc-side-by-side",
+      "fc-secrets",
+      "fc-identity",
+      "fc-profile-types",
+      "fc-entitlements",
+      "fc-versions",
+      "fc-match",
+      "fc-fastlane-aliases",
+      "fc-asc-api-key",
+      "fc-feature-flags"
+    ],
+    "exam": 12
+  },
+  "c15-app-store": {
+    "lessons": [
+      "connect-metadata",
+      "privacy",
+      "builds-testflight",
+      "app-review",
+      "release",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "fc-metadata-limits",
+      "fc-bundle-id",
+      "fc-paid-apps",
+      "fc-usage-description",
+      "fc-privacy-manifest",
+      "fc-required-reason",
+      "fc-att",
+      "fc-account-deletion",
+      "fc-export-compliance",
+      "fc-testflight",
+      "fc-review-info",
+      "fc-guidelines",
+      "fc-phased-release",
+      "fc-release-options",
+      "fc-sdk-requirement"
+    ],
+    "exam": 12
+  },
+  "c16-iap-subscriptions": {
+    "lessons": [
+      "products-setup",
+      "storekit2-basics",
+      "lifecycle-offers",
+      "testing-tiers",
+      "server-side",
+      "review-cycle",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "fc-product-types",
+      "fc-group-levels",
+      "fc-empty-products",
+      "fc-purchase-results",
+      "fc-finish",
+      "fc-updates",
+      "fc-restore",
+      "fc-grace-retry",
+      "fc-intro-eligibility",
+      "fc-offers",
+      "fc-test-tiers",
+      "fc-review-sandbox",
+      "fc-notifications",
+      "fc-app-account-token",
+      "fc-commission"
+    ],
+    "exam": 15
+  },
+  "c17-security-privacy": {
+    "lessons": [
+      "keychain-storage",
+      "network-security",
+      "cryptokit",
+      "local-auth-secrets",
+      "integrity-threats",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "fc-userdefaults",
+      "fc-keychain-primary-key",
+      "fc-duplicate",
+      "fc-this-device-only",
+      "fc-data-protection",
+      "fc-ats",
+      "fc-pinning-order",
+      "fc-backup-pin",
+      "fc-logger-privacy",
+      "fc-hash-vs-encrypt",
+      "fc-secure-enclave",
+      "fc-biometric-bool",
+      "fc-current-set",
+      "fc-binary-secrets",
+      "fc-app-attest"
+    ],
+    "exam": 12
+  },
+  "c18-performance-production": {
+    "lessons": [
+      "debugging-toolkit",
+      "memory-in-practice",
+      "crashes",
+      "logging-observability",
+      "instruments-performance",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "lldb-v-p-po",
+      "log-breakpoint",
+      "symbolic-breakpoint",
+      "main-thread-checker",
+      "image-memory",
+      "downsampling",
+      "leaks-vs-allocations",
+      "exc-breakpoint",
+      "exc-bad-access",
+      "watchdog",
+      "dsym",
+      "crash-free",
+      "logger-privacy",
+      "metrickit",
+      "print-changes"
+    ],
+    "exam": 12
+  },
+  "c19-system-capabilities": {
+    "lessons": [
+      "push-notifications",
+      "deep-links",
+      "background-extensions",
+      "widgets-live-activities",
+      "app-intents-capabilities",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "fc-p8-key",
+      "fc-when-ask",
+      "fc-device-token",
+      "fc-payload",
+      "fc-silent-push",
+      "fc-service-extension",
+      "fc-scheme-vs-universal",
+      "fc-aasa",
+      "fc-receive-links",
+      "fc-bgtask",
+      "fc-app-groups",
+      "fc-timeline",
+      "fc-live-activity",
+      "fc-app-intent",
+      "fc-usage-strings"
+    ],
+    "exam": 12
+  },
+  "c20-architect-interviews": {
+    "lessons": [
+      "mobile-system-design",
+      "decisions-in-writing",
+      "code-review",
+      "live-coding-classics",
+      "algorithms-and-behavioral",
+      "final-challenge"
+    ],
+    "flashcards": [
+      "fc-sd-framework",
+      "fc-cursor-offset",
+      "fc-swr",
+      "fc-outbox",
+      "fc-idempotency",
+      "fc-adr",
+      "fc-rfc",
+      "fc-dora",
+      "fc-review-order",
+      "fc-review-labels",
+      "fc-lru",
+      "fc-debounce",
+      "fc-inflight",
+      "fc-complexity",
+      "fc-star"
+    ],
+    "exam": 12
+  }
+}

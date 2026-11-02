@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { createContext, createElement, useCallback, useContext, useEffect, useRef, useState } from "react";
 
 export interface Progress {
   flash: Record<string, "ok" | "again">;
@@ -50,7 +50,7 @@ function readLocal(): Progress {
   return EMPTY;
 }
 
-export function useProgress() {
+function useProgressState() {
   const [progress, setProgress] = useState<Progress>(EMPTY);
   const [loaded, setLoaded] = useState(false);
   const [syncCode, setSyncCodeState] = useState<string>("");
@@ -62,7 +62,8 @@ export function useProgress() {
     try {
       const r = await fetch(`/api/progress?code=${encodeURIComponent(code)}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(p) });
       setSync(r.status === 501 ? "unavailable" : r.ok ? "ok" : "error");
-    } catch { setSync("error"); }
+      return r.ok;
+    } catch { setSync("error"); return false; }
   }, []);
 
   const pull = useCallback(async (code: string, local: Progress) => {
@@ -89,6 +90,14 @@ export function useProgress() {
     setLoaded(true);
     if (code) pull(code, local);
   }, [pull]);
+
+  // Al volver a la pestaña, traer lo hecho en otros dispositivos.
+  useEffect(() => {
+    if (!syncCode) return;
+    const onVisible = () => { if (document.visibilityState === "visible") pull(syncCode, readLocal()); };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [syncCode, pull]);
 
   const persist = useCallback((next: Progress) => {
     try { localStorage.setItem(KEY, JSON.stringify(next)); } catch {}
@@ -120,6 +129,19 @@ export function useProgress() {
     if (syncCode) push(syncCode, { ...EMPTY, updatedAt: Date.now() });
   }, [syncCode, push]);
 
+  // Cerrar sesión en este dispositivo: sube lo pendiente y recién entonces borra el progreso local.
+  const signOut = useCallback(async () => {
+    if (syncCode) {
+      if (timer.current) clearTimeout(timer.current);
+      if (!(await push(syncCode, progress))) return false;
+    }
+    try { localStorage.removeItem(KEY); localStorage.removeItem(CODE_KEY); } catch {}
+    setProgress(EMPTY);
+    setSyncCodeState("");
+    setSync("off");
+    return true;
+  }, [syncCode, push, progress]);
+
   const exportJSON = useCallback(() => JSON.stringify(progress, null, 2), [progress]);
   const importJSON = useCallback((text: string) => {
     const parsed = { ...EMPTY, ...JSON.parse(text) } as Progress;
@@ -128,7 +150,21 @@ export function useProgress() {
     persist(merged);
   }, [persist]);
 
-  return { progress, update, reset, loaded, syncCode, setSyncCode, sync, exportJSON, importJSON };
+  return { progress, update, reset, loaded, syncCode, setSyncCode, signOut, sync, exportJSON, importJSON };
+}
+
+// Un único estado de progreso para toda la app: una sola lectura de localStorage y una sola conexión con la nube.
+type ProgressCtx = ReturnType<typeof useProgressState>;
+const ProgressContext = createContext<ProgressCtx | null>(null);
+
+export function ProgressProvider({ children }: { children: React.ReactNode }) {
+  return createElement(ProgressContext.Provider, { value: useProgressState() }, children);
+}
+
+export function useProgress() {
+  const ctx = useContext(ProgressContext);
+  if (!ctx) throw new Error("useProgress necesita <ProgressProvider>");
+  return ctx;
 }
 
 export function shuffle<T>(arr: T[]): T[] {

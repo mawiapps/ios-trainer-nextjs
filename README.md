@@ -2,8 +2,8 @@
 
 Plataforma interactiva en Next.js para aprender iOS de cero a arquitecto, en español o inglés (selector en la barra lateral).
 
-- **Cursos** (`/cursos`): 20 cursos en orden pedagógico, de Swift desde cero a system design: Swift, SwiftUI, UIKit, concurrencia, networking, testing, MVVM/Coordinator, VIPER/Clean, TCA, modularidad, legacy, CI/CD, App Store, compras in-app y suscripciones, seguridad, performance, capacidades del sistema y entrevistas. Cada curso tiene lecciones interactivas, un reto final, flashcards de repaso y un examen (se aprueba con 70 %).
-- **Práctica libre**: los modos originales, pensados para el assessment de TestGorilla (lecciones sueltas, referencia rápida, flashcards, quiz, predecir la salida, escribir código, cazar bugs, entrevista).
+- **Módulos** (`/modulos`): 20 módulos en orden pedagógico, de Swift desde cero a system design: Swift, SwiftUI, UIKit, concurrencia, networking, testing, MVVM/Coordinator, VIPER/Clean, TCA, modularidad, legacy, CI/CD, App Store, compras in-app y suscripciones, seguridad, performance, capacidades del sistema y entrevistas. Cada módulo muestra su % de avance y tiene cuatro pestañas: **Lecciones** (con reto final), **Flashcards**, **Práctica** (todos los ejercicios mezclados) y **Quiz** (se aprueba con 70 %). El botón **Continuar** lleva siempre al próximo paso.
+- **Prep TestGorilla** (`/modulos/prep-testgorilla`): los modos originales para el assessment de TestGorilla como pestañas de un módulo: lecciones sueltas, flashcards, quiz, predecir la salida, escribir código, cazar bugs, entrevista y referencia rápida.
 
 ## Correr en local
 
@@ -14,34 +14,21 @@ npm run dev
 
 Abrí http://localhost:3000
 
-## Modos
-
-| Ruta | Qué hace |
-| --- | --- |
-| `/lecciones` | **Empezá acá.** 26 lecciones paso a paso: cada concepto explicado con ejemplos y salida, seguido de ejercicios (predecir salida, completar hueco, escribir código). No se avanza sin resolver. |
-| `/teoria` | Referencia rápida: resumen comprimido del temario para repasar el día antes. |
-| `/flashcards` | Tarjetas por tema; "Lo sabía" las retira, "Repetir" las manda al final del mazo. |
-| `/quiz` | Opción múltiple estilo TestGorilla con explicación de cada respuesta. |
-| `/salida` | "¿Qué imprime este Swift?" – entrena las trampas del lenguaje. |
-| `/codigo` | Retos de código: escribís la función de memoria, recibís checklist, advertencias y solución. |
-| `/bugs` | Debugging: hacé clic en la línea con el error. |
-| `/entrevista` | Preguntas de entrevista/custom: respondés, comparás con puntos clave y te autoevaluás. |
-
 ## Progreso desde cualquier dispositivo
 
-Por defecto el progreso vive en `localStorage` (solo ese navegador). Para verlo desde cualquier lado:
+Al entrar, la app pide un **código personal** (ej. `wilver-ios-2026`). Con ese código todo el progreso se guarda solo en MongoDB y se fusiona con lo que haya en el navegador; en otro dispositivo se entra con el mismo código. Para que funcione en producción:
 
 1. **Base de datos gratis (MongoDB Atlas)**: creá una cuenta en https://www.mongodb.com/atlas, un clúster gratuito (M0) y un usuario de base de datos. En *Network Access* permití `0.0.0.0/0` (Vercel no tiene IP fija). En *Connect → Drivers* copiá la cadena `mongodb+srv://...` (reemplazá `<password>`).
 2. **Deploy gratis en Vercel**: subí la carpeta a un repo de GitHub, entrá a https://vercel.com/new, importá el repo y en *Environment Variables* pegá `MONGODB_URI` (y opcionalmente `DB_NAME`, por defecto `ios_trainer`). Deploy. Te da una URL tipo `https://ios-trainer-xxx.vercel.app`.
-3. En la app, en **Inicio → Sincronización**, elegí un código (ej. `wilver-ios-2026`) y tocá Conectar. Usá el mismo código en cada dispositivo. El progreso se guarda en cada cambio y se fusiona (nunca pierde lo hecho).
+3. Entrá a la app y escribí tu código. El progreso se guarda en cada cambio, se vuelve a traer al volver a la pestaña y se fusiona (nunca pierde lo hecho). **Salir en este dispositivo** (en Inicio) sube lo pendiente y borra la copia local.
 
-Para correrlo local con sync, copiá `.env.example` a `.env.local` y completá `MONGODB_URI` (Atlas o un Mongo local, `mongodb://127.0.0.1:27017`). El progreso queda en la colección `progress`, un documento por código de sincronización.
+Para correrlo local con sync, copiá `.env.example` a `.env.local` y completá `MONGODB_URI` (Atlas o un Mongo local, `mongodb://127.0.0.1:27017`). El progreso queda en la colección `progress`, un documento por código personal.
 
-Sin base configurada, la app funciona igual en modo local, y podés mover el progreso con **Exportar / Importar** (.json).
+Sin base configurada, el código igual se pide pero el progreso queda solo en el navegador, y podés mover el progreso con **Exportar / Importar** (.json).
 
 ## Agregar contenido
 
-Los cursos viven en `data/courses/<id>/es.ts` y `en.ts`; las reglas están en [`docs/COURSE_AUTHORING.md`](docs/COURSE_AUTHORING.md) y `node scripts/validate-courses.mjs` las verifica. Los textos de la interfaz están en `locales/es.json` y `locales/en.json`.
+Los módulos viven en `data/courses/<id>/es.ts` y `en.ts`; las reglas están en [`docs/COURSE_AUTHORING.md`](docs/COURSE_AUTHORING.md). Después de editar, corré `node scripts/course-stats.mjs` (actualiza `data/courses/stats.json`, que da el % de cada módulo) y `node scripts/validate-courses.mjs`. Los textos de la interfaz están en `locales/es.json` y `locales/en.json`.
 
 
 Las lecciones viven en `data/lessons/*.ts` (tipos de paso: `explain`, `predict`, `fill`, `write`). El resto del contenido vive en `data/*.ts` (flashcards, quiz, output, code, bugs, interview, theory). Agregá un objeto al array y listo; los tipos están en `data/types.ts`.

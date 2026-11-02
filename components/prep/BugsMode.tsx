@@ -5,7 +5,7 @@ import { useI18n } from "@/lib/i18n";
 import { useProgress } from "@/lib/progress";
 import Inline from "@/components/Inline";
 
-export default function BugsPage() {
+export default function BugsMode() {
   const { progress, update } = useProgress();
   const { bugExercises } = useContent();
   const { t } = useI18n();
@@ -25,7 +25,6 @@ export default function BugsPage() {
 
   return (
     <>
-      <h1>{t("bugs.title")}</h1>
       <p className="lead">{t("bugs.lead")}</p>
       <div className="filters">
         {bugExercises.map((b, n) => <button key={b.id} className={n === idx ? "on" : ""} onClick={() => go(n)}>{progress.bugs[b.id] ? "✓ " : ""}{b.title}</button>)}

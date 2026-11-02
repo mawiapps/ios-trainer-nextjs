@@ -17,11 +17,10 @@ export interface McqItem {
   explanation: string;
 }
 
-export default function McqGame({ items, done, onAnswer, title, lead, defaultQuestion }: {
+export default function McqGame({ items, done, onAnswer, lead, defaultQuestion }: {
   items: McqItem[];
   done: Record<string, boolean>;
   onAnswer: (id: string, correct: boolean) => void;
-  title: string;
   lead: string;
   defaultQuestion?: string;
 }) {
@@ -49,7 +48,6 @@ export default function McqGame({ items, done, onAnswer, title, lead, defaultQue
 
   return (
     <>
-      <h1>{title}</h1>
       <p className="lead">{lead}</p>
       {topics.length > 0 && <TopicFilter topics={topics} value={topic} onChange={setTopic} />}
       <div className="row" style={{ marginBottom: 14 }}>

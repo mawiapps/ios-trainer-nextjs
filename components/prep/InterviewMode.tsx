@@ -11,7 +11,7 @@ function normalize(s: string) {
   return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 }
 
-export default function EntrevistaPage() {
+export default function InterviewMode() {
   const { progress, update } = useProgress();
   const { interviewQuestions } = useContent();
   const { t } = useI18n();
@@ -39,13 +39,12 @@ export default function EntrevistaPage() {
     return s;
   }, [answer, q]);
 
-  if (!q) return <h1>{t("interview.title")}</h1>;
+  if (!q) return null;
   const covered = q.keyPoints.filter((_, i) => checked[i] || hits.has(i)).length;
   const stars = progress.interview[q.id] ?? 0;
 
   return (
     <>
-      <h1>{t("interview.title")}</h1>
       <p className="lead">{t("interview.lead")}</p>
       <TopicFilter topics={topics} value={topic} onChange={(t) => { setTopic(t); go(0); }} />
       <div className="card">

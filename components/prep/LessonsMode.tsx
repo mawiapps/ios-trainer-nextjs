@@ -8,7 +8,7 @@ import LessonPlayer from "@/components/LessonPlayer";
 
 const ORDER: Topic[] = ["swift", "algoritmos", "rest", "ingenieria", "ios", "seguridad", "testing"];
 
-export default function LeccionesPage() {
+export default function LessonsMode() {
   const { progress, update, loaded } = useProgress();
   const { lessons } = useContent();
   const { t } = useI18n();
@@ -22,7 +22,6 @@ export default function LeccionesPage() {
 
   return (
     <>
-      <h1>{t("lessons.title")}</h1>
       <p className="lead">{t("lessons.lead")}</p>
       {loaded && <div style={{ marginBottom: 20 }}><div className="progress-bar"><div style={{ width: `${(doneCount / lessons.length) * 100}%` }} /></div><div className="muted">{t("lessons.completed", { done: doneCount, total: lessons.length })}</div></div>}
       {ORDER.map((topic) => {
