@@ -6,5 +6,4 @@ export { codeExercises } from "./code";
 export { bugExercises } from "./bugs";
 export { interviewQuestions } from "./interview";
 export { theory } from "./theory";
-// Pendiente de traducción: se reexporta la versión en español.
-export { lessons } from "../lessons";
+export { lessons } from "./lessons";

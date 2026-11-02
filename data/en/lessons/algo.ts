@@ -1,0 +1,341 @@
+import { Lesson } from "../../lessons/types";
+
+export const algoLessons: Lesson[] = [
+  {
+    id: "l-bigo",
+    topic: "algoritmos",
+    title: "Big-O in 10 minutes",
+    goal: "Recognize a piece of code's complexity at a glance and know which data structure turns O(n²) into O(n).",
+    minutes: 10,
+    steps: [
+      {
+        kind: "explain",
+        title: "What it measures",
+        body: [
+          "Big-O describes how time (or memory) grows as the input size n grows. It doesn't measure seconds: it measures the shape of the growth.",
+          "From best to worst: O(1) constant, O(log n) logarithmic, O(n) linear, O(n log n), O(n²) quadratic.",
+          "A simple loop over n → O(n). Two nested loops over n → O(n²). Halving each time → O(log n). Sorting → O(n log n).",
+        ],
+        code: "// O(n)\nfor x in a { ... }\n\n// O(n²)\nfor x in a { for y in a { ... } }\n\n// O(log n): binary search\nwhile lo <= hi { mid = (lo + hi) / 2 ... }\n\n// O(n log n)\na.sorted()",
+      },
+      {
+        kind: "explain",
+        title: "Cost of each operation in Swift",
+        body: [
+          "Array: `a[i]` O(1), `append` amortized O(1), `insert(at: 0)` O(n), `contains` O(n), `firstIndex` O(n), `remove(at:)` O(n).",
+          "Dictionary and Set: `d[k]`, `insert`, `contains`, `remove` are O(1) on average.",
+          "String: `count` is O(n) (it isn't free), so inside loops store it in a variable or use `Array(s)`.",
+        ],
+      },
+      {
+        kind: "predict",
+        prompt: "What's the complexity?",
+        code: "func f(_ a: [Int]) -> Bool {\n    for i in 0..<a.count {\n        for j in (i+1)..<a.count where a[i] == a[j] {\n            return true\n        }\n    }\n    return false\n}",
+        options: ["O(n)", "O(n log n)", "O(n²)", "O(1)"],
+        answer: 2,
+        explanation: "Two nested loops over n. With a Set it would be O(n).",
+      },
+      {
+        kind: "explain",
+        title: "The golden rule of the challenge",
+        body: [
+          "If you're writing a for inside another for to 'check whether it already exists', stop: that's a `Set` or a `Dictionary`.",
+          "If you need 'the k largest/smallest', sort once (n log n) and take `prefix(k)`; don't search for the maximum k times.",
+          "For the test, O(n) or O(n log n) is always enough. O(n²) tends to time out on the big test case.",
+        ],
+      },
+      {
+        kind: "predict",
+        prompt: "What's the complexity of this version?",
+        code: "func f(_ a: [Int]) -> Bool {\n    var s = Set<Int>()\n    for x in a {\n        if !s.insert(x).inserted { return true }\n    }\n    return false\n}",
+        options: ["O(n)", "O(n²)", "O(log n)", "O(n log n)"],
+        answer: 0,
+        explanation: "A single loop; insert is O(1) on average.",
+      },
+    ],
+  },
+  {
+    id: "l-hashmap",
+    topic: "algoritmos",
+    title: "Hash map pattern: count, group, two-sum",
+    goal: "Solve frequency, duplicate, anagram and pair-sums-to-X challenges in O(n).",
+    minutes: 14,
+    steps: [
+      {
+        kind: "explain",
+        title: "When it applies",
+        body: [
+          "When the question contains words like 'how many times', 'repeated', 'unique', 'group', 'pair that sums to', 'anagram'. All of them are solved by storing what you've seen in a `Dictionary` or `Set` and querying it in O(1).",
+        ],
+      },
+      {
+        kind: "explain",
+        title: "Frequencies and the most common",
+        body: ["Count with `default: 0`, then `max(by:)` on the value."],
+        code: "func mostCommon(_ s: String) -> Character? {\n    var c: [Character: Int] = [:]\n    for ch in s { c[ch, default: 0] += 1 }\n    return c.max(by: { $0.value < $1.value })?.key\n}\nprint(mostCommon(\"banana\")!)   // a",
+        output: "a",
+      },
+      {
+        kind: "explain",
+        title: "Two-sum: are there two that add up to target?",
+        body: [
+          "For each x, the complement is `target - x`. If you've already seen it, done. If not, store x. A single pass.",
+        ],
+        code: "func twoSum(_ a: [Int], _ target: Int) -> (Int, Int)? {\n    var idx: [Int: Int] = [:]      // value → index\n    for (i, x) in a.enumerated() {\n        if let j = idx[target - x] { return (j, i) }\n        idx[x] = i\n    }\n    return nil\n}\nprint(twoSum([2, 7, 11, 15], 9)!)   // (0, 1)",
+        output: "(0, 1)",
+      },
+      {
+        kind: "fill",
+        prompt: "Fill in the key we look up in the dictionary (the complement).",
+        code: "for (i, x) in a.enumerated() {\n    if let j = idx[____] { return (j, i) }\n    idx[x] = i\n}",
+        accept: ["^target\\s*-\\s*x$"],
+        explanation: "If x + y = target, then y = target - x.",
+        placeholder: "expression",
+      },
+      {
+        kind: "explain",
+        title: "Anagrams",
+        body: [
+          "Two strings are anagrams if they have the same letters with the same frequency. Two approaches: sort both (n log n) or compare counting dictionaries (n).",
+          "To group anagrams: the key is the sorted string.",
+        ],
+        code: "func areAnagrams(_ a: String, _ b: String) -> Bool {\n    a.lowercased().sorted() == b.lowercased().sorted()\n}\nlet groups = Dictionary(grouping: [\"eat\", \"tea\", \"tan\", \"nat\"], by: { String($0.sorted()) })\nprint(groups.values.map { $0.count }.sorted())   // [2, 2]",
+        output: "[2, 2]",
+      },
+      {
+        kind: "predict",
+        code: "let a = [1, 5, 3, 5, 1, 5]\nvar c: [Int: Int] = [:]\nfor x in a { c[x, default: 0] += 1 }\nlet uniques = c.filter { $0.value == 1 }.map { $0.key }\nprint(uniques, c[5]!)",
+        options: ["[3] 3", "[1, 3] 3", "[3] 2", "[] 3"],
+        answer: 0,
+        explanation: "1 appears twice, 5 three times, 3 once. Only 3 is unique.",
+      },
+      {
+        kind: "write",
+        prompt: "Write `func firstUnique(_ s: String) -> Character?` that returns the first character that appears exactly once.",
+        starter: "func firstUnique(_ s: String) -> Character? {\n    \n}",
+        checks: [
+          { pattern: "\\[Character:\\s*Int\\]", label: "Frequency dictionary" },
+          { pattern: "default:\\s*0", label: "Counts with default: 0" },
+          { pattern: "for\\s+\\w+\\s+in\\s+s[\\s\\S]*for\\s+\\w+\\s+in\\s+s|first\\(where:", label: "Second pass in original order to find the one with count 1" },
+        ],
+        solution: "func firstUnique(_ s: String) -> Character? {\n    var c: [Character: Int] = [:]\n    for ch in s { c[ch, default: 0] += 1 }\n    return s.first(where: { c[$0] == 1 })\n}",
+        hint: "First pass: count. Second pass (in order): the first one with count 1.",
+      },
+    ],
+  },
+  {
+    id: "l-twopointers",
+    topic: "algoritmos",
+    title: "Two pointers pattern",
+    goal: "Palindromes, pairs in a sorted array and in-place compaction with no extra memory.",
+    minutes: 10,
+    steps: [
+      {
+        kind: "explain",
+        title: "The idea",
+        body: [
+          "Two indices that move according to a rule: from both ends toward the middle (palindrome, pair summing to X in a sorted array) or one slow and one fast (removing duplicates in place).",
+          "Benefit: O(n) time, O(1) memory.",
+        ],
+        code: "func isPalindrome(_ s: String) -> Bool {\n    let c = Array(s.lowercased().filter { $0.isLetter })\n    var i = 0, j = c.count - 1\n    while i < j {\n        if c[i] != c[j] { return false }\n        i += 1; j -= 1\n    }\n    return true\n}\nprint(isPalindrome(\"A man, a plan, a canal: Panama\"))   // true",
+        output: "true",
+      },
+      {
+        kind: "explain",
+        title: "Pair summing to X in a sorted array",
+        body: [
+          "If the sum is less than the target, move the left pointer (the sum goes up). If it's greater, move the right one (it goes down). If it's equal, you found it.",
+        ],
+        code: "func pairSum(_ a: [Int], _ t: Int) -> (Int, Int)? {\n    var i = 0, j = a.count - 1\n    while i < j {\n        let s = a[i] + a[j]\n        if s == t { return (a[i], a[j]) }\n        if s < t { i += 1 } else { j -= 1 }\n    }\n    return nil\n}\nprint(pairSum([1, 3, 4, 6, 9], 10)!)   // (1, 9)",
+        output: "(1, 9)",
+      },
+      {
+        kind: "fill",
+        prompt: "Fill in which pointer to move when the sum is less than the target.",
+        code: "if s < t { ____ } else { j -= 1 }",
+        accept: ["^i\\s*\\+=\\s*1$", "^i\\s*=\\s*i\\s*\\+\\s*1$"],
+        explanation: "Moving the left index up increases the sum (the array is sorted).",
+        placeholder: "statement",
+      },
+      {
+        kind: "explain",
+        title: "Slow and fast: remove duplicates in place",
+        body: [
+          "In a sorted array, `w` marks where to write the next unique value; `r` scans. If `a[r]` differs from the last one written, copy it.",
+        ],
+        code: "func removeDups(_ a: inout [Int]) -> Int {\n    guard !a.isEmpty else { return 0 }\n    var w = 1\n    for r in 1..<a.count where a[r] != a[w - 1] {\n        a[w] = a[r]; w += 1\n    }\n    return w   // useful length\n}\nvar v = [1, 1, 2, 2, 3]\nlet n = removeDups(&v)\nprint(Array(v.prefix(n)))   // [1, 2, 3]",
+        output: "[1, 2, 3]",
+      },
+      {
+        kind: "predict",
+        code: "let a = [2, 4, 7, 11]\nvar i = 0, j = a.count - 1, steps = 0\nwhile i < j {\n    let s = a[i] + a[j]\n    steps += 1\n    if s == 11 { break }\n    if s < 11 { i += 1 } else { j -= 1 }\n}\nprint(steps, a[i], a[j])",
+        options: ["2 4 7", "3 4 7", "1 2 11", "2 2 7"],
+        answer: 1,
+        explanation: "Step 1: 2+11 = 13 > 11 → j moves down to 7. Step 2: 2+7 = 9 < 11 → i moves up to 4. Step 3: 4+7 = 11 → break. Three steps, i points to 4 and j to 7.",
+      },
+    ],
+  },
+  {
+    id: "l-window",
+    topic: "algoritmos",
+    title: "Sliding window pattern",
+    goal: "Solve 'sum/average/max of every window of size k' and 'longest substring without repeats' in O(n).",
+    minutes: 12,
+    steps: [
+      {
+        kind: "explain",
+        title: "Fixed window",
+        body: [
+          "Instead of recomputing each window's sum (O(n·k)), keep a running sum and, when sliding, add the element coming in and subtract the one going out (O(n)).",
+          "Initialize with the first window `prefix(k)`, then iterate from `k` to `count - 1`.",
+        ],
+        code: "func maxWindowSum(_ a: [Int], _ k: Int) -> Int {\n    guard k > 0, k <= a.count else { return 0 }\n    var sum = a.prefix(k).reduce(0, +)\n    var best = sum\n    for i in k..<a.count {\n        sum += a[i] - a[i - k]\n        best = max(best, sum)\n    }\n    return best\n}\nprint(maxWindowSum([1, 4, 2, 10, 2, 3], 3))   // 16",
+        output: "16",
+      },
+      {
+        kind: "fill",
+        prompt: "Fill in the sum update when sliding the window.",
+        code: "for i in k..<a.count {\n    sum += ____\n    best = max(best, sum)\n}",
+        accept: ["^a\\[i\\]\\s*-\\s*a\\[i\\s*-\\s*k\\]$"],
+        explanation: "a[i] comes in, a[i - k] goes out.",
+        placeholder: "expression",
+      },
+      {
+        kind: "predict",
+        code: "let a = [2.0, 4.0, 6.0, 8.0]\nlet k = 2\nvar sum = a.prefix(k).reduce(0, +)\nvar r = [sum / Double(k)]\nfor i in k..<a.count {\n    sum += a[i] - a[i - k]\n    r.append(sum / Double(k))\n}\nprint(r)",
+        options: ["[3.0, 5.0, 7.0]", "[3.0, 5.0]", "[2.0, 4.0, 6.0]", "Crash"],
+        answer: 0,
+        explanation: "Windows (2,4), (4,6), (6,8) → averages 3, 5, 7.",
+      },
+      {
+        kind: "explain",
+        title: "Variable window: substring without repeats",
+        body: [
+          "Two indices `l` and `r` and a Set with what's inside the window. You advance `r`; if the character is already there, move `l` forward removing characters until it isn't. The maximum of `r - l + 1` is the answer.",
+        ],
+        code: "func longestWithoutRepeats(_ s: String) -> Int {\n    let c = Array(s)\n    var set = Set<Character>()\n    var l = 0, best = 0\n    for r in 0..<c.count {\n        while set.contains(c[r]) {\n            set.remove(c[l]); l += 1\n        }\n        set.insert(c[r])\n        best = max(best, r - l + 1)\n    }\n    return best\n}\nprint(longestWithoutRepeats(\"abcabcbb\"))   // 3",
+        output: "3",
+      },
+      {
+        kind: "write",
+        prompt: "Write `func windowAverages(_ a: [Double], _ k: Int) -> [Double]` that returns the average of each window of size k (empty if k is invalid), in O(n).",
+        starter: "func windowAverages(_ a: [Double], _ k: Int) -> [Double] {\n    \n}",
+        checks: [
+          { pattern: "guard|if\\s+k", label: "Validates k" },
+          { pattern: "prefix\\(k\\)", label: "First window with prefix(k)" },
+          { pattern: "a\\[i\\]\\s*-\\s*a\\[i\\s*-\\s*k\\]", label: "Slides by adding the incoming element and subtracting the outgoing one" },
+          { pattern: "Double\\(k\\)", label: "Divides by Double(k)" },
+        ],
+        warnings: [{ pattern: "for[\\s\\S]*reduce", label: "reduce inside the for recomputes every window: O(n·k)" }],
+        solution: "func windowAverages(_ a: [Double], _ k: Int) -> [Double] {\n    guard k > 0, k <= a.count else { return [] }\n    var sum = a.prefix(k).reduce(0, +)\n    var r = [sum / Double(k)]\n    for i in k..<a.count {\n        sum += a[i] - a[i - k]\n        r.append(sum / Double(k))\n    }\n    return r\n}",
+      },
+    ],
+  },
+  {
+    id: "l-stack",
+    topic: "algoritmos",
+    title: "Stack pattern",
+    goal: "Balanced brackets, 'next greater element' and expression evaluation using an array as a stack.",
+    minutes: 10,
+    steps: [
+      {
+        kind: "explain",
+        title: "An array is a stack",
+        body: [
+          "`append` = push, `popLast()` = pop (optional, safe), `last` = peek. LIFO: the last one in is the first one out.",
+          "Use it when what you do with an element depends on the **last one you saw** and haven't resolved yet.",
+        ],
+        code: "var stack: [Int] = []\nstack.append(1); stack.append(2)\nprint(stack.last!)        // 2\nprint(stack.popLast()!)   // 2\nprint(stack.popLast()!)   // 1\nprint(stack.popLast() as Any)   // nil, no crash",
+        output: "2\n2\n1\nnil",
+      },
+      {
+        kind: "explain",
+        title: "Balanced brackets",
+        body: [
+          "Opening → push. Closing → pop and compare with its pair; if it doesn't match or the stack was empty, false. At the end the stack must be empty.",
+        ],
+        code: "func isBalanced(_ s: String) -> Bool {\n    let pairs: [Character: Character] = [\")\": \"(\", \"]\": \"[\", \"}\": \"{\"]\n    var st: [Character] = []\n    for c in s {\n        if \"([{\".contains(c) { st.append(c) }\n        else if let open = pairs[c] {\n            if st.popLast() != open { return false }\n        }\n    }\n    return st.isEmpty\n}\nprint(isBalanced(\"{[()]}\"), isBalanced(\"(]\"), isBalanced(\"((\"))",
+        output: "true false false",
+      },
+      {
+        kind: "fill",
+        prompt: "Fill in the final condition: the string is valid if…",
+        code: "    }\n    return st.____\n}",
+        accept: ["^isEmpty$"],
+        explanation: "If there are unclosed openings left, the stack isn't empty.",
+        placeholder: "property",
+      },
+      {
+        kind: "predict",
+        code: "var st: [Character] = []\nfor c in \"(()\" {\n    if c == \"(\" { st.append(c) } else { _ = st.popLast() }\n}\nprint(st.count)",
+        options: ["0", "1", "2", "Crash"],
+        answer: 1,
+        explanation: "Push, push, pop → one unclosed opening is left.",
+      },
+      {
+        kind: "explain",
+        title: "Next greater element",
+        body: [
+          "For each number, the first one to its right that is greater. You iterate storing indices on the stack; when a value greater than the top shows up, you resolve every pending index it applies to.",
+        ],
+        code: "func nextGreater(_ a: [Int]) -> [Int] {\n    var res = Array(repeating: -1, count: a.count)\n    var st: [Int] = []   // indices\n    for i in 0..<a.count {\n        while let top = st.last, a[i] > a[top] {\n            res[top] = a[i]; st.removeLast()\n        }\n        st.append(i)\n    }\n    return res\n}\nprint(nextGreater([2, 1, 5, 3]))   // [5, 5, -1, -1]",
+        output: "[5, 5, -1, -1]",
+      },
+    ],
+  },
+  {
+    id: "l-binsearch",
+    topic: "algoritmos",
+    title: "Binary search and sort-then-scan",
+    goal: "Write binary search without an infinite loop and solve interval/top-k problems by sorting first.",
+    minutes: 10,
+    steps: [
+      {
+        kind: "explain",
+        title: "Binary search",
+        body: [
+          "Only on **sorted** arrays. Look at the middle; if the target is greater, discard the left half (`lo = mid + 1`); if it's smaller, the right half (`hi = mid - 1`). O(log n).",
+          "The two classic bugs: `lo = mid` (infinite loop) and `while lo < hi` (the last element gets skipped).",
+        ],
+        code: "func binarySearch(_ a: [Int], _ t: Int) -> Int {\n    var lo = 0, hi = a.count - 1\n    while lo <= hi {\n        let mid = lo + (hi - lo) / 2\n        if a[mid] == t { return mid }\n        if a[mid] < t { lo = mid + 1 } else { hi = mid - 1 }\n    }\n    return -1\n}\nprint(binarySearch([1, 3, 5, 7, 9], 7), binarySearch([1, 3], 4))   // 3 -1",
+        output: "3 -1",
+      },
+      {
+        kind: "fill",
+        prompt: "Fill in the assignment when the target is to the right of the middle.",
+        code: "if a[mid] < t { lo = ____ } else { hi = mid - 1 }",
+        accept: ["^mid\\s*\\+\\s*1$"],
+        explanation: "`mid + 1`: we already know a[mid] isn't the target.",
+        placeholder: "expression",
+      },
+      {
+        kind: "explain",
+        title: "Sort first, scan after",
+        body: [
+          "Lots of challenges become trivial once sorted: merging intervals, finding the closest pair, top-k, median.",
+          "Merging intervals: sort by start; if the current one starts at or before the end of the last merged one, extend the end with `max`; otherwise, start a new one.",
+        ],
+        code: "func mergeIntervals(_ iv: [[Int]]) -> [[Int]] {\n    var res: [[Int]] = []\n    for x in iv.sorted(by: { $0[0] < $1[0] }) {\n        if let last = res.last, x[0] <= last[1] {\n            res[res.count - 1][1] = max(last[1], x[1])\n        } else {\n            res.append(x)\n        }\n    }\n    return res\n}\nprint(mergeIntervals([[1,3],[8,10],[2,6]]))   // [[1, 6], [8, 10]]",
+        output: "[[1, 6], [8, 10]]",
+      },
+      {
+        kind: "predict",
+        code: "print(mergeIntervals([[1, 4], [4, 5], [7, 8]]))",
+        options: ["[[1, 5], [7, 8]]", "[[1, 4], [4, 5], [7, 8]]", "[[1, 8]]", "[[1, 5]]"],
+        answer: 0,
+        explanation: "4 <= 4 → [1,4] and [4,5] merge. 7 > 5 → new interval.",
+      },
+      {
+        kind: "explain",
+        title: "Checklist before submitting a challenge",
+        body: [
+          "1. Does it compile in your head? Types, optionals, `Array(...)` around slices.",
+          "2. Empty input and single-element input.",
+          "3. Loop bounds: `..<` vs `...`, `count - 1`.",
+          "4. Duplicates, negatives, k > n, uppercase/punctuation in strings.",
+          "5. Is there a for inside a for? Can it become a Set/Dictionary?",
+        ],
+      },
+    ],
+  },
+];
