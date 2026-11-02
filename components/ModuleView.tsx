@@ -6,20 +6,23 @@ import { loaders } from "@/data/courses";
 import type { CourseContent } from "@/data/courses/types";
 import { useI18n } from "@/lib/i18n";
 import { useProgress } from "@/lib/progress";
+import { moduleProgress, nextStep } from "@/lib/modules";
+import { useTab } from "@/lib/useTab";
 import Inline from "@/components/Inline";
 import LessonPlayer from "@/components/LessonPlayer";
 import CourseDeck from "@/components/CourseDeck";
 import CourseExam from "@/components/CourseExam";
+import ModulePractice from "@/components/ModulePractice";
 
-type Tab = "lessons" | "review" | "exam";
+const TABS = ["lessons", "flashcards", "practice", "quiz"] as const;
 
-export default function CourseView({ id }: { id: string }) {
+export default function ModuleView({ id }: { id: string }) {
   const { t, locale } = useI18n();
   const { progress, update, loaded } = useProgress();
   const meta = courses.find((c) => c.id === id)!;
   const [content, setContent] = useState<CourseContent | null>(null);
   const [failed, setFailed] = useState(false);
-  const [tab, setTab] = useState<Tab>("lessons");
+  const [tab, setTab] = useTab(TABS);
   const [active, setActive] = useState<string | null>(null);
 
   useEffect(() => {
@@ -41,18 +44,25 @@ export default function CourseView({ id }: { id: string }) {
         done={!!progress.lessons[lessonKey(lesson.id)]}
         onComplete={() => update("lessons", lessonKey(lesson.id), true)}
         onExit={() => setActive(null)}
-        backLabel={t("course.back")}
+        backLabel={t("module.back")}
       />
     );
   }
 
+  const mp = moduleProgress(id, progress);
+  const next = nextStep(id, progress);
   const lessons = content?.lessons ?? [];
-  const doneCount = lessons.filter((l) => progress.lessons[lessonKey(l.id)]).length;
-  const best = progress.exams[id];
+  const nextLesson = next.kind === "lesson" ? lessons.find((l) => l.id === next.lessonId) : undefined;
+
+  function goNext() {
+    if (next.kind === "lesson") { setTab("lessons"); setActive(next.lessonId); }
+    else if (next.kind === "flashcards") setTab("flashcards");
+    else if (next.kind === "quiz") setTab("quiz");
+  }
 
   return (
     <>
-      <Link href="/cursos" className="btn small ghost">{t("courses.back")}</Link>
+      <Link href="/modulos" className="btn small ghost">{t("modules.back")}</Link>
       <div className="row" style={{ marginTop: 14 }}>
         <span className="tag">{meta.order}</span>
         {meta.levels.map((l) => <span key={l} className="tag accent">{l}</span>)}
@@ -60,21 +70,36 @@ export default function CourseView({ id }: { id: string }) {
       <h1 style={{ marginTop: 8 }}>{meta.title[locale]}</h1>
       <p className="lead"><Inline text={meta.description[locale]} /></p>
 
-      {failed && <div className="feedback bad">{t("courses.loadError")}</div>}
-      {!content && !failed && <p className="muted">{t("courses.loading")}</p>}
-      {content && !lessons.length && <div className="card"><p className="muted" style={{ margin: 0 }}>{t("courses.empty")}</p></div>}
+      {failed && <div className="feedback bad">{t("modules.loadError")}</div>}
+      {!content && !failed && <p className="muted">{t("modules.loading")}</p>}
 
-      {content && lessons.length > 0 && (
+      {content && loaded && (
         <>
-          {loaded && (
-            <div style={{ marginBottom: 18 }}>
-              <div className="progress-bar"><div style={{ width: `${(doneCount / lessons.length) * 100}%` }} /></div>
-              <div className="muted">{t("course.progress", { done: doneCount, total: lessons.length })}{best !== undefined ? ` · ${t("exam.best", { score: best })}` : ""}</div>
+          <div className="card">
+            <div className="row">
+              <b>{t("module.progress", { percent: mp.percent })}</b>
+              <span className="spacer" />
+              <span className="muted">
+                {t("module.breakdown", { lessons: mp.lessons.done, lessonsTotal: mp.lessons.total, cards: mp.flashcards.done, cardsTotal: mp.flashcards.total })}
+                {" · "}{mp.quiz === undefined ? t("module.quizPending") : t("exam.best", { score: mp.quiz })}
+              </span>
             </div>
-          )}
+            <div className="progress-bar"><div style={{ width: `${mp.percent}%` }} /></div>
+            <div className="row" style={{ marginTop: 10 }}>
+              <span>
+                {next.kind === "lesson" && <Inline text={t("module.next.lesson", { n: next.index + 1, title: nextLesson?.title ?? "" })} />}
+                {next.kind === "flashcards" && t("module.next.flashcards")}
+                {next.kind === "quiz" && t("module.next.quiz")}
+                {next.kind === "done" && t("module.next.done")}
+              </span>
+              <span className="spacer" />
+              {next.kind !== "done" && <button className="btn primary" onClick={goNext}>{t("module.continue")}</button>}
+            </div>
+          </div>
+
           <div className="tabs" role="tablist">
-            {(["lessons", "review", "exam"] as Tab[]).map((k) => (
-              <button key={k} role="tab" aria-selected={tab === k} className={tab === k ? "on" : ""} onClick={() => setTab(k)}>{t(`course.tab.${k}`)}</button>
+            {TABS.map((k) => (
+              <button key={k} role="tab" aria-selected={tab === k} className={tab === k ? "on" : ""} onClick={() => setTab(k)}>{t(`module.tab.${k}`)}</button>
             ))}
           </div>
 
@@ -87,7 +112,7 @@ export default function CourseView({ id }: { id: string }) {
                 return (
                   <button key={l.id} className="card" style={{ textAlign: "left", cursor: "pointer", border: done ? "1px solid var(--ok)" : undefined }} onClick={() => setActive(l.id)}>
                     <div className="row" style={{ marginBottom: 6 }}>
-                      <span className={`tag${final ? " accent" : ""}`}>{final ? t("course.finalChallenge") : n + 1}</span>
+                      <span className={`tag${final ? " accent" : ""}`}>{final ? t("module.finalChallenge") : n + 1}</span>
                       {done && <span className="tag" style={{ color: "var(--ok)", borderColor: "var(--ok)" }}>{t("lessons.done")}</span>}
                       <span className="spacer" />
                       <span className="muted">{t("lessons.meta", { min: l.minutes, ex })}</span>
@@ -99,11 +124,12 @@ export default function CourseView({ id }: { id: string }) {
               })}
             </div>
           )}
-          {tab === "review" && (
+          {tab === "flashcards" && (
             <CourseDeck key={locale} courseId={id} cards={content.flashcards} flash={progress.flash} onGrade={(k, v) => update("flash", k, v)} />
           )}
-          {tab === "exam" && (
-            <CourseExam key={locale} questions={content.exam} best={best} onFinish={(s) => { if (s > (best ?? -1)) update("exams", id, s); }} />
+          {tab === "practice" && <ModulePractice key={locale} lessons={content.lessons} />}
+          {tab === "quiz" && (
+            <CourseExam key={locale} questions={content.exam} best={mp.quiz} onFinish={(s) => { if (s > (mp.quiz ?? -1)) update("exams", id, s); }} />
           )}
         </>
       )}

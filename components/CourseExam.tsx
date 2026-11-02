@@ -2,10 +2,9 @@
 import { useState } from "react";
 import type { ExamQuestion } from "@/data/courses/types";
 import { useI18n } from "@/lib/i18n";
+import { PASS_SCORE } from "@/lib/modules";
 import Code from "@/components/Code";
 import Inline from "@/components/Inline";
-
-export const PASS_SCORE = 70;
 
 // Examen final de un curso: preguntas en orden, explicación después de cada respuesta, nota al final.
 export default function CourseExam({ questions, best, onFinish }: {

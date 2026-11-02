@@ -23,7 +23,7 @@ function evaluate(code: string, ex: CodeExercise): Result {
   return { checks, warnings, score };
 }
 
-export default function CodigoPage() {
+export default function CodeMode() {
   const { progress, update } = useProgress();
   const { codeExercises } = useContent();
   const { t } = useI18n();
@@ -55,7 +55,6 @@ export default function CodigoPage() {
 
   return (
     <>
-      <h1>{t("code.title")}</h1>
       <p className="lead">{t("code.lead")}</p>
       <div className="filters">
         {codeExercises.map((e, n) => {

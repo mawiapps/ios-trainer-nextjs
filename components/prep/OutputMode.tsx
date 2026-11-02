@@ -4,13 +4,12 @@ import { useContent } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
 import { useProgress } from "@/lib/progress";
 
-export default function SalidaPage() {
+export default function OutputMode() {
   const { progress, update } = useProgress();
   const { outputQuestions } = useContent();
   const { t } = useI18n();
   return (
     <McqGame
-      title={t("output.title")}
       lead={t("output.lead")}
       defaultQuestion={t("output.question")}
       items={outputQuestions}

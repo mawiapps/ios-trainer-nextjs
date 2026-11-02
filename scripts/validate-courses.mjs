@@ -174,6 +174,11 @@ for (const id of ids.length ? ids : allIds) {
   if (es && en) checkParity(id, es, en);
   if (es) { totals.lessons += es.lessons.length; totals.flashcards += es.flashcards.length; totals.exam += es.exam.length; }
 }
+if (!ids.length) {
+  const { buildStats } = await import("./course-stats.mjs");
+  const cur = (() => { try { return readFileSync(join(root, "data/courses/stats.json"), "utf8"); } catch { return ""; } })();
+  if (cur !== (await buildStats())) err("stats.json", "desactualizado: corré node scripts/course-stats.mjs");
+}
 console.log(`\n${totals.lessons} lecciones, ${totals.flashcards} flashcards, ${totals.exam} preguntas de examen por idioma`);
 console.log(errors ? `✗ ${errors} errores, ${warnings} advertencias` : `✓ sin errores (${warnings} advertencias)`);
 process.exit(errors ? 1 : 0);

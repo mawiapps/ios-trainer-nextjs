@@ -4,13 +4,12 @@ import { useContent } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
 import { useProgress } from "@/lib/progress";
 
-export default function QuizPage() {
+export default function QuizMode() {
   const { progress, update } = useProgress();
   const { quiz } = useContent();
   const { t } = useI18n();
   return (
     <McqGame
-      title={t("quiz.title")}
       lead={t("quiz.lead")}
       items={quiz}
       done={progress.quiz}

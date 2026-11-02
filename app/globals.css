@@ -38,6 +38,14 @@ code.inline { background: var(--bg-3); padding: 1px 6px; border-radius: 6px; fon
 .lang { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
 .lang button { background: transparent; border: none; color: var(--muted); padding: 4px 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
 .lang button.on { background: var(--bg-3); color: var(--text); }
+.gate { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.gate .card { max-width: 520px; width: 100%; }
+.input { background: #0b0d11; border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 8px; font-family: var(--mono); min-width: 220px; flex: 1; }
+.input:focus { outline: 1px solid var(--accent); }
+.nav .pct { margin-left: auto; font-size: 11px; color: var(--muted); }
+.nav a.done .pct { color: var(--ok); }
+.account { margin-top: 18px; padding: 10px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); }
+.account b { color: var(--text); font-family: var(--mono); font-weight: 500; }
 .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
 .tabs button { background: none; border: none; border-bottom: 2px solid transparent; color: var(--muted); padding: 8px 14px; cursor: pointer; font-size: 14px; font-weight: 500; }
 .tabs button.on { color: var(--text); border-bottom-color: var(--accent); }

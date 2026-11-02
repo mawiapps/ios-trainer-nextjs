@@ -8,7 +8,7 @@ import TopicFilter from "@/components/TopicFilter";
 import Code from "@/components/Code";
 import Inline from "@/components/Inline";
 
-export default function Flashcards() {
+export default function FlashcardsMode() {
   const { progress, update, loaded } = useProgress();
   const { flashcards } = useContent();
   const { t } = useI18n();
@@ -42,7 +42,6 @@ export default function Flashcards() {
 
   return (
     <>
-      <h1>{t("flash.title")}</h1>
       <p className="lead">{t("flash.lead")}</p>
       <TopicFilter topics={topics} value={topic} onChange={setTopic} />
       <div className="row" style={{ marginBottom: 14 }}>

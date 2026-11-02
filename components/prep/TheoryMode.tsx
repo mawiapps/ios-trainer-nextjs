@@ -9,7 +9,7 @@ import TopicFilter from "@/components/TopicFilter";
 import Code from "@/components/Code";
 import Inline from "@/components/Inline";
 
-export default function Teoria() {
+export default function TheoryMode() {
   const { progress, update } = useProgress();
   const { theory } = useContent();
   const { t: tr } = useI18n();
@@ -18,8 +18,7 @@ export default function Teoria() {
   const list = theory.filter((t) => topic === "all" || t.topic === topic);
   return (
     <>
-      <h1>{tr("theory.title")}</h1>
-      <p className="lead">{tr("theory.lead")} <Link href="/cursos" style={{ color: "var(--accent-2)" }}>{tr("theory.leadLink")}</Link>.</p>
+      <p className="lead">{tr("theory.lead")} <Link href="/modulos" style={{ color: "var(--accent-2)" }}>{tr("theory.leadLink")}</Link>.</p>
       <TopicFilter topics={topics} value={topic} onChange={setTopic} />
       {list.map((t) => {
         const read = !!progress.theory[t.id];

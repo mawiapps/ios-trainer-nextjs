@@ -68,7 +68,7 @@ function Explain({ step }: { step: Extract<Step, { kind: "explain" }> }) {
   );
 }
 
-function Predict({ step, onSolved }: { step: Extract<Step, { kind: "predict" }>; onSolved: () => void }) {
+export function Predict({ step, onSolved }: { step: Extract<Step, { kind: "predict" }>; onSolved: () => void }) {
   const { t } = useI18n();
   const [picked, setPicked] = useState<number | null>(null);
   const [tries, setTries] = useState(0);
@@ -103,7 +103,7 @@ function Predict({ step, onSolved }: { step: Extract<Step, { kind: "predict" }>;
 
 function norm(s: string) { return s.trim().replace(/\s+/g, " "); }
 
-function Fill({ step, onSolved }: { step: Extract<Step, { kind: "fill" }>; onSolved: () => void }) {
+export function Fill({ step, onSolved }: { step: Extract<Step, { kind: "fill" }>; onSolved: () => void }) {
   const { t } = useI18n();
   const [val, setVal] = useState("");
   const [state, setState] = useState<"idle" | "ok" | "bad">("idle");
@@ -142,7 +142,7 @@ function Fill({ step, onSolved }: { step: Extract<Step, { kind: "fill" }>; onSol
   );
 }
 
-function WriteStep({ step, onSolved }: { step: Extract<Step, { kind: "write" }>; onSolved: () => void }) {
+export function WriteStep({ step, onSolved }: { step: Extract<Step, { kind: "write" }>; onSolved: () => void }) {
   const { t } = useI18n();
   const [code, setCode] = useState(step.starter ?? "");
   const [result, setResult] = useState<{ checks: { label: string; ok: boolean }[]; warnings: string[] } | null>(null);

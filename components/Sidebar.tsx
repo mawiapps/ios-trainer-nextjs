@@ -1,31 +1,23 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { courses } from "@/data/courses/catalog";
 import { LOCALES, useI18n } from "@/lib/i18n";
-
-const main = [
-  { href: "/", icon: "🏠", key: "nav.home" },
-  { href: "/cursos", icon: "🧭", key: "nav.courses" },
-];
-const practice = [
-  { href: "/lecciones", icon: "🎓", key: "nav.lessons" },
-  { href: "/teoria", icon: "📖", key: "nav.theory" },
-  { href: "/flashcards", icon: "🃏", key: "nav.flashcards" },
-  { href: "/quiz", icon: "✅", key: "nav.quiz" },
-  { href: "/salida", icon: "🔮", key: "nav.output" },
-  { href: "/codigo", icon: "⌨️", key: "nav.code" },
-  { href: "/bugs", icon: "🐛", key: "nav.bugs" },
-  { href: "/entrevista", icon: "🎤", key: "nav.interview" },
-];
+import { useProgress } from "@/lib/progress";
+import { useContent } from "@/lib/content";
+import { moduleProgress } from "@/lib/modules";
+import { PREP_ID, prepProgress } from "@/lib/prep";
 
 export default function Sidebar() {
   const path = usePathname();
   const { t, locale, setLocale } = useI18n();
-  const isActive = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
-  const link = (it: (typeof main)[number]) => (
-    <Link key={it.href} href={it.href} className={isActive(it.href) ? "active" : ""}>
-      <span className="icon">{it.icon}</span>
-      {t(it.key)}
+  const { progress, syncCode, sync } = useProgress();
+  const content = useContent();
+  const item = (href: string, label: React.ReactNode, pct?: number, icon?: string) => (
+    <Link key={href} href={href} className={`${path === href ? "active" : ""}${pct === 100 ? " done" : ""}`}>
+      {icon && <span className="icon">{icon}</span>}
+      <span>{label}</span>
+      {pct !== undefined && <span className="pct">{pct}%</span>}
     </Link>
   );
   return (
@@ -38,10 +30,14 @@ export default function Sidebar() {
         ))}
       </div>
       <nav className="nav">
-        {main.map(link)}
-        <div className="nav-section">{t("nav.practice")}</div>
-        {practice.map(link)}
+        {item("/", t("nav.home"), undefined, "🏠")}
+        {item("/modulos", t("nav.modules"), undefined, "🧭")}
+        <div className="nav-section">{t("nav.path")}</div>
+        {courses.map((c) => item(`/modulos/${c.id}`, `${c.order}. ${c.title[locale]}`, moduleProgress(c.id, progress).percent))}
+        <div className="nav-section">{t("nav.extra")}</div>
+        {item(`/modulos/${PREP_ID}`, t("prep.title"), prepProgress(progress, content))}
       </nav>
+      <div className="account">{t("sync.yourCode")} <b>{syncCode}</b><br />{t(`sync.state.${sync}`)}</div>
     </aside>
   );
 }
